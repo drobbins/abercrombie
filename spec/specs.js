@@ -17,7 +17,7 @@
     it("Defines its grid size", function() {
       return expect(ab.size).toEqual(jasmine.any(Number));
     });
-    return describe(".refresh", function() {
+    describe(".refresh", function() {
       var ctx, cvTop;
       cvTop = ctx = null;
       beforeEach(function() {
@@ -42,6 +42,30 @@
         expect(document.getElementById).toHaveBeenCalledWith("cvTop");
         expect(ab.cvTop).toBe(cvTop);
         return expect(ab.ctx).toBe(ctx);
+      });
+    });
+    return describe(".alignCanvases", function() {
+      var cvBase;
+      cvBase = {
+        offsetLeft: 26,
+        offsetTop: 142
+      };
+      beforeEach(function() {
+        spyOn(document, "getElementById").and.returnValue(cvBase);
+        spyOn(ab, "refresh");
+        return ab.cvTop = {
+          style: {}
+        };
+      });
+      beforeEach(function() {
+        return ab.alignCanvases();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("aligns @cvTop with cvBase", function() {
+        expect(ab.cvTop.style.left).toEqual(cvBase.offsetLeft);
+        return expect(ab.cvTop.style.top).toEqual(cvBase.offsetTop);
       });
     });
   });

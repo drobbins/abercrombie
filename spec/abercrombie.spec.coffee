@@ -39,3 +39,23 @@ describe "Abercrombie", ->
             expect(document.getElementById).toHaveBeenCalledWith "cvTop"
             expect(ab.cvTop).toBe cvTop
             expect(ab.ctx).toBe ctx
+
+    describe ".alignCanvases", ->
+
+        cvBase = offsetLeft: 26, offsetTop: 142
+
+        beforeEach ->
+            spyOn document, "getElementById"
+                .and.returnValue cvBase
+            spyOn ab, "refresh"
+            ab.cvTop = style: {}
+
+        beforeEach ->
+            ab.alignCanvases()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "aligns @cvTop with cvBase", ->
+            expect(ab.cvTop.style.left).toEqual cvBase.offsetLeft
+            expect(ab.cvTop.style.top).toEqual cvBase.offsetTop

@@ -10,10 +10,10 @@ class Abercrombie
         @ctx   = @cvTop.getContext "2d"
 
     alignCanvases: ->
-        cvTop = @getCanvas()
+        @refresh()
         cvBase = document.getElementById("cvBase")
-        cvTop.style.left=cvBase.offsetLeft;
-        cvTop.style.top=cvBase.offsetTop;
+        @cvTop.style.left=cvBase.offsetLeft;
+        @cvTop.style.top=cvBase.offsetTop;
 
     getCanvas: -> document.getElementById("cvTop")
 

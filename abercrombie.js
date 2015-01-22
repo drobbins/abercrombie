@@ -15,11 +15,11 @@
     };
 
     Abercrombie.prototype.alignCanvases = function() {
-      var cvBase, cvTop;
-      cvTop = this.getCanvas();
+      var cvBase;
+      this.refresh();
       cvBase = document.getElementById("cvBase");
-      cvTop.style.left = cvBase.offsetLeft;
-      return cvTop.style.top = cvBase.offsetTop;
+      this.cvTop.style.left = cvBase.offsetLeft;
+      return this.cvTop.style.top = cvBase.offsetTop;
     };
 
     Abercrombie.prototype.getCanvas = function() {
