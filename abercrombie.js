@@ -1,11 +1,15 @@
 (function() {
-  var abercrombie, id, menu, name, version;
+  var a, abercrombie, id, menu, name, version;
 
   version = "0.0.1";
 
   id = "abercrombie";
 
   imagejs.msg("" + id + " version " + version + " loaded.");
+
+  a = {
+    size: 50
+  };
 
   abercrombie = imagejs.modules[id] = {
     alignCanvases: function() {
@@ -24,7 +28,7 @@
     paintProbe: function(x, y) {
       var ctx;
       ctx = abercrombie.getContext();
-      return ctx.strokeRect(x, y, 50, 50);
+      return ctx.strokeRect(x, y, a.size, a.size);
     },
     placeProbe: function() {
       var cv;
@@ -42,8 +46,20 @@
       };
     },
     paintGrid: function() {
-      var ctx;
-      return ctx = abercrombie.getContext();
+      var cv, y, _i, _ref, _ref1;
+      cv = abercrombie.getCanvas();
+      for (y = _i = 0, _ref = cv.height - 1, _ref1 = a.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; y = _i += _ref1) {
+        abercrombie.paintRow(y);
+      }
+      return null;
+    },
+    paintRow: function(y) {
+      var cv, x, _i, _ref, _ref1;
+      cv = abercrombie.getCanvas();
+      for (x = _i = 0, _ref = cv.width - 1, _ref1 = a.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; x = _i += _ref1) {
+        abercrombie.paintProbe(x, y);
+      }
+      return null;
     }
   };
 
@@ -52,11 +68,14 @@
   name = "Abercrombie (" + version + ")";
 
   menu = {
-    "Start": function() {
-      return imagejs.msg("You started something good.");
+    "Clear": function() {
+      return abercrombie.getContext().clearRect(0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height);
     },
     "Place Probe": function() {
       return abercrombie.placeProbe();
+    },
+    "Show Grid": function() {
+      return abercrombie.paintGrid();
     }
   };
 
