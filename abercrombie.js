@@ -9,7 +9,10 @@
       this.Abercrombie = Abercrombie;
     }
 
-    Abercrombie.prototype.refresh = function() {};
+    Abercrombie.prototype.refresh = function() {
+      this.cvTop = document.getElementById("cvTop");
+      return this.ctx = this.cvTop.getContext("2d");
+    };
 
     Abercrombie.prototype.alignCanvases = function() {
       var cvBase, cvTop;

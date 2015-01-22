@@ -1,11 +1,13 @@
 class Abercrombie
-    constructor: () ->
+    constructor: ->
         @id      = "abercrombie"
         @version = "0.0.1"
         @size    = 50               # Default px size of grid/probe.
         @Abercrombie = Abercrombie  # Abercrombie-ception
 
     refresh: ->
+        @cvTop = document.getElementById "cvTop"
+        @ctx   = @cvTop.getContext "2d"
 
     alignCanvases: ->
         cvTop = @getCanvas()
