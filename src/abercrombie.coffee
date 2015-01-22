@@ -26,7 +26,10 @@ abercrombie = imagejs.modules[id] =
             if not x then x = evt.clientX-evt.target.offsetLeft+window.pageXOffset
             if not y then y = evt.clientY-evt.target.offsetTop+window.pageYOffset
             abercrombie.paintProbe(x,y)
+    paintGrid: ->
+        ctx = abercrombie.getContext()
 
+window.ab = abercrombie
 
 # Create the Menu
 name = "Abercrombie (#{version})"

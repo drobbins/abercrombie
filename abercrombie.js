@@ -40,8 +40,14 @@
         }
         return abercrombie.paintProbe(x, y);
       };
+    },
+    paintGrid: function() {
+      var ctx;
+      return ctx = abercrombie.getContext();
     }
   };
+
+  window.ab = abercrombie;
 
   name = "Abercrombie (" + version + ")";
 
