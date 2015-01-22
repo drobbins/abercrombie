@@ -20,8 +20,8 @@ class Abercrombie
     getContext: -> @getCanvas().getContext("2d")
 
     paintProbe: (x,y) ->
-        ctx = @getContext()
-        ctx.strokeRect x, y, @size, @size
+        @refresh()
+        @ctx.strokeRect x, y, @size, @size
 
     placeProbe: ->
         cv = @getCanvas()

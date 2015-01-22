@@ -31,9 +31,8 @@
     };
 
     Abercrombie.prototype.paintProbe = function(x, y) {
-      var ctx;
-      ctx = this.getContext();
-      return ctx.strokeRect(x, y, this.size, this.size);
+      this.refresh();
+      return this.ctx.strokeRect(x, y, this.size, this.size);
     };
 
     Abercrombie.prototype.placeProbe = function() {

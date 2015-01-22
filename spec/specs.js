@@ -36,7 +36,7 @@
         return expect(ab.ctx).toBe(cvTop.getContext());
       });
     });
-    return describe(".alignCanvases", function() {
+    describe(".alignCanvases", function() {
       var cvBase;
       cvBase = {
         offsetLeft: 26,
@@ -58,6 +58,24 @@
       return it("aligns @cvTop with cvBase", function() {
         expect(ab.cvTop.style.left).toEqual(cvBase.offsetLeft);
         return expect(ab.cvTop.style.top).toEqual(cvBase.offsetTop);
+      });
+    });
+    return describe(".paintProbe", function() {
+      var x, y;
+      x = 10;
+      y = 15;
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        return ab.ctx = jasmine.createSpyObj("ctx", ["strokeRect"]);
+      });
+      beforeEach(function() {
+        return ab.paintProbe(x, y);
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("calls @ctx.strokeRect with the provided x,y and @size", function() {
+        return expect(ab.ctx.strokeRect).toHaveBeenCalledWith(x, y, ab.size, ab.size);
       });
     });
   });

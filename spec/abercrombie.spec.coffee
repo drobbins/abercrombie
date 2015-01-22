@@ -53,3 +53,21 @@ describe "Abercrombie", ->
         it "aligns @cvTop with cvBase", ->
             expect(ab.cvTop.style.left).toEqual cvBase.offsetLeft
             expect(ab.cvTop.style.top).toEqual cvBase.offsetTop
+
+    describe ".paintProbe", ->
+
+        x = 10
+        y = 15
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            ab.ctx = jasmine.createSpyObj "ctx", ["strokeRect"]
+
+        beforeEach ->
+            ab.paintProbe x,y
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "calls @ctx.strokeRect with the provided x,y and @size", ->
+            expect(ab.ctx.strokeRect).toHaveBeenCalledWith x,y,ab.size,ab.size
