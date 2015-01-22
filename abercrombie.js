@@ -30,25 +30,32 @@
       return this.getCanvas().getContext("2d");
     };
 
+    Abercrombie.prototype.getEventCoordinates = function(evt, x, y) {
+      if (!x) {
+        x = evt.clientX - evt.target.offsetLeft + window.pageXOffset;
+      }
+      if (!y) {
+        y = evt.clientY - evt.target.offsetTop + window.pageYOffset;
+      }
+      return [x, y];
+    };
+
     Abercrombie.prototype.paintProbe = function(x, y) {
       this.refresh();
       return this.ctx.strokeRect(x, y, this.size, this.size);
     };
 
     Abercrombie.prototype.placeProbe = function() {
-      var cv;
-      cv = this.getCanvas();
-      cv.style.cursor = "crosshair";
+      this.refresh();
+      this.cvTop.style.cursor = "crosshair";
       this.alignCanvases();
-      return cv.onclick = function(evt, x, y) {
-        if (!x) {
-          x = evt.clientX - evt.target.offsetLeft + window.pageXOffset;
-        }
-        if (!y) {
-          y = evt.clientY - evt.target.offsetTop + window.pageYOffset;
-        }
-        return this.paintProbe(x, y);
-      };
+      return this.cvTop.onclick = (function(_this) {
+        return function(evt, x, y) {
+          var _ref;
+          _ref = _this.getEventCoordinates(evt, x, y), x = _ref[0], y = _ref[1];
+          return _this.paintProbe(x, y);
+        };
+      })(this);
     };
 
     Abercrombie.prototype.paintGrid = function() {

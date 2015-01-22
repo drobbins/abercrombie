@@ -19,17 +19,21 @@ class Abercrombie
 
     getContext: -> @getCanvas().getContext("2d")
 
+    getEventCoordinates: (evt,x,y) ->
+        if not x then x = evt.clientX - evt.target.offsetLeft + window.pageXOffset
+        if not y then y = evt.clientY - evt.target.offsetTop  + window.pageYOffset
+        [x,y]
+
     paintProbe: (x,y) ->
         @refresh()
         @ctx.strokeRect x, y, @size, @size
 
     placeProbe: ->
-        cv = @getCanvas()
-        cv.style.cursor = "crosshair"
+        @refresh()
+        @cvTop.style.cursor = "crosshair"
         @alignCanvases()
-        cv.onclick = (evt,x,y) ->
-            if not x then x = evt.clientX-evt.target.offsetLeft+window.pageXOffset
-            if not y then y = evt.clientY-evt.target.offsetTop+window.pageYOffset
+        @cvTop.onclick = (evt,x,y) =>
+            [x,y] = @getEventCoordinates evt, x, y
             @paintProbe(x,y)
 
     paintGrid: ->
