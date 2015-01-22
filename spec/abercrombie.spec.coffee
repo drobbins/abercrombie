@@ -20,17 +20,11 @@ describe "Abercrombie", ->
 
     describe ".refresh", ->
 
-        cvTop = ctx = null
+        cvTop = getContext: -> "Context"
 
         beforeEach ->
-            cvTop = document.createElement "canvas"
-            ctx = cvTop.getContext "2d"
-            gId = document.getElementById
             spyOn document, "getElementById"
-                .and.callFake (id) ->
-                    switch id
-                        when "cvTop", "cvBase" then return cvTop
-                        else return gId id
+                .and.returnValue cvTop
 
         beforeEach ->
             ab.refresh()
@@ -38,7 +32,7 @@ describe "Abercrombie", ->
         it "Puts the current context and canvas on itself", ->
             expect(document.getElementById).toHaveBeenCalledWith "cvTop"
             expect(ab.cvTop).toBe cvTop
-            expect(ab.ctx).toBe ctx
+            expect(ab.ctx).toBe cvTop.getContext()
 
     describe ".alignCanvases", ->
 

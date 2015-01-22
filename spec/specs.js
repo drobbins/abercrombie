@@ -18,22 +18,14 @@
       return expect(ab.size).toEqual(jasmine.any(Number));
     });
     describe(".refresh", function() {
-      var ctx, cvTop;
-      cvTop = ctx = null;
+      var cvTop;
+      cvTop = {
+        getContext: function() {
+          return "Context";
+        }
+      };
       beforeEach(function() {
-        var gId;
-        cvTop = document.createElement("canvas");
-        ctx = cvTop.getContext("2d");
-        gId = document.getElementById;
-        return spyOn(document, "getElementById").and.callFake(function(id) {
-          switch (id) {
-            case "cvTop":
-            case "cvBase":
-              return cvTop;
-            default:
-              return gId(id);
-          }
-        });
+        return spyOn(document, "getElementById").and.returnValue(cvTop);
       });
       beforeEach(function() {
         return ab.refresh();
@@ -41,7 +33,7 @@
       return it("Puts the current context and canvas on itself", function() {
         expect(document.getElementById).toHaveBeenCalledWith("cvTop");
         expect(ab.cvTop).toBe(cvTop);
-        return expect(ab.ctx).toBe(ctx);
+        return expect(ab.ctx).toBe(cvTop.getContext());
       });
     });
     return describe(".alignCanvases", function() {

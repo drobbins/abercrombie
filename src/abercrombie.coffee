@@ -11,9 +11,9 @@ class Abercrombie
 
     alignCanvases: ->
         @refresh()
-        cvBase = document.getElementById("cvBase")
-        @cvTop.style.left=cvBase.offsetLeft;
-        @cvTop.style.top=cvBase.offsetTop;
+        cvBase            = document.getElementById("cvBase")
+        @cvTop.style.left = cvBase.offsetLeft;
+        @cvTop.style.top  = cvBase.offsetTop;
 
     getCanvas: -> document.getElementById("cvTop")
 
