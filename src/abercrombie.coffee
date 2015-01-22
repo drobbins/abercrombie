@@ -3,6 +3,9 @@ class Abercrombie
         @id      = "abercrombie"
         @version = "0.0.1"
         @size    = 50               # Default px size of grid/probe.
+        @Abercrombie = Abercrombie  # Abercrombie-ception
+
+    refresh: ->
 
     alignCanvases: ->
         cvTop = @getCanvas()
@@ -39,11 +42,13 @@ class Abercrombie
             @paintProbe(x,y)
         return null
 
+# Instantiate Abercrombie
+abercrombie = window.abercrombie = window.ab = new Abercrombie()
+
 if imagejs?
 
-    # Instantiate and Load Module
-    abercrombie = new Abercrombie()
-    window.ab = imagejs.modules[abercrombie.id] = abercrombie
+    # Load Module
+    imagejs.modules[abercrombie.id] = abercrombie
 
     # Say Hello
     imagejs.msg "#{abercrombie.id} version #{abercrombie.version} loaded."

@@ -6,7 +6,10 @@
       this.id = "abercrombie";
       this.version = "0.0.1";
       this.size = 50;
+      this.Abercrombie = Abercrombie;
     }
+
+    Abercrombie.prototype.refresh = function() {};
 
     Abercrombie.prototype.alignCanvases = function() {
       var cvBase, cvTop;
@@ -68,9 +71,10 @@
 
   })();
 
+  abercrombie = window.abercrombie = window.ab = new Abercrombie();
+
   if (typeof imagejs !== "undefined" && imagejs !== null) {
-    abercrombie = new Abercrombie();
-    window.ab = imagejs.modules[abercrombie.id] = abercrombie;
+    imagejs.modules[abercrombie.id] = abercrombie;
     imagejs.msg("" + abercrombie.id + " version " + abercrombie.version + " loaded.");
     name = "Abercrombie (" + abercrombie.version + ")";
     menu = {
