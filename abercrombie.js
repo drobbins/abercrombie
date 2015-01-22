@@ -59,18 +59,18 @@
     };
 
     Abercrombie.prototype.paintGrid = function() {
-      var cv, y, _i, _ref, _ref1;
-      cv = this.getCanvas();
-      for (y = _i = 0, _ref = cv.height - 1, _ref1 = this.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; y = _i += _ref1) {
+      var y, _i, _ref, _ref1;
+      this.refresh();
+      for (y = _i = 0, _ref = this.cvTop.height - 1, _ref1 = this.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; y = _i += _ref1) {
         this.paintRow(y);
       }
       return null;
     };
 
     Abercrombie.prototype.paintRow = function(y) {
-      var cv, x, _i, _ref, _ref1;
-      cv = this.getCanvas();
-      for (x = _i = 0, _ref = cv.width - 1, _ref1 = this.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; x = _i += _ref1) {
+      var x, _i, _ref, _ref1;
+      this.refresh();
+      for (x = _i = 0, _ref = this.cvTop.width - 1, _ref1 = this.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; x = _i += _ref1) {
         this.paintProbe(x, y);
       }
       return null;

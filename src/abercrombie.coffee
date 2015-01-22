@@ -37,14 +37,14 @@ class Abercrombie
             @paintProbe(x,y)
 
     paintGrid: ->
-        cv = @getCanvas()
-        for y in [0..cv.height-1] by @size
+        @refresh()
+        for y in [0..@cvTop.height-1] by @size
             @paintRow(y)
         return null
 
     paintRow: (y) ->
-        cv = @getCanvas()
-        for x in [0..cv.width-1] by @size
+        @refresh()
+        for x in [0..@cvTop.width-1] by @size
             @paintProbe(x,y)
         return null
 

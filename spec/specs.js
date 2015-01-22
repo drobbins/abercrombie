@@ -122,7 +122,7 @@
         });
       });
     });
-    return describe(".getEventCoordinates", function() {
+    describe(".getEventCoordinates", function() {
       it("should pass through x and y if given", function() {
         var xx, yy, _ref;
         _ref = ab.getEventCoordinates(evt, x, y), xx = _ref[0], yy = _ref[1];
@@ -134,6 +134,58 @@
         _ref = ab.getEventCoordinates(evt), xx = _ref[0], yy = _ref[1];
         expect(xx).toEqual(evt.clientX - evt.target.offsetLeft + window.pageXOffset);
         return expect(yy).toEqual(evt.clientY - evt.target.offsetTop + window.pageYOffset);
+      });
+    });
+    describe(".paintRow", function() {
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        spyOn(ab, "paintProbe");
+        return ab.cvTop = {
+          width: 200
+        };
+      });
+      beforeEach(function() {
+        return ab.paintRow(y);
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      it("calls paintProbe x,y with the provided y and x = [0..cvTop.width-1] by size.", function() {
+        var _i, _ref, _ref1, _results;
+        _results = [];
+        for (x = _i = 0, _ref = ab.cvTop.width - 1, _ref1 = ab.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; x = _i += _ref1) {
+          _results.push(expect(ab.paintProbe).toHaveBeenCalledWith(x, y));
+        }
+        return _results;
+      });
+      return it("returns null", function() {
+        return expect(ab.paintRow(y)).toBeNull();
+      });
+    });
+    return describe(".paintGrid", function() {
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        spyOn(ab, "paintRow");
+        return ab.cvTop = {
+          height: 200
+        };
+      });
+      beforeEach(function() {
+        return ab.paintGrid();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      it("calls paintRow y with y = [0..cvTop.height-1] by size.", function() {
+        var _i, _ref, _ref1, _results;
+        _results = [];
+        for (y = _i = 0, _ref = ab.cvTop.height - 1, _ref1 = ab.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; y = _i += _ref1) {
+          _results.push(expect(ab.paintRow).toHaveBeenCalledWith(y));
+        }
+        return _results;
+      });
+      return it("returns null", function() {
+        return expect(ab.paintGrid()).toBeNull();
       });
     });
   });

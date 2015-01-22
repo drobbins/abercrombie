@@ -135,3 +135,43 @@ describe "Abercrombie", ->
             [xx,yy] = ab.getEventCoordinates evt
             expect(xx).toEqual evt.clientX - evt.target.offsetLeft + window.pageXOffset
             expect(yy).toEqual evt.clientY - evt.target.offsetTop  + window.pageYOffset
+
+    describe ".paintRow", ->
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            spyOn ab, "paintProbe"
+            ab.cvTop = width: 200
+
+        beforeEach ->
+            ab.paintRow y
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "calls paintProbe x,y with the provided y and x = [0..cvTop.width-1] by size.", ->
+            for x in [0..ab.cvTop.width-1] by ab.size
+                expect(ab.paintProbe).toHaveBeenCalledWith x, y
+
+        it "returns null", ->
+            expect(ab.paintRow(y)).toBeNull()
+
+    describe ".paintGrid", ->
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            spyOn ab, "paintRow"
+            ab.cvTop = height: 200
+
+        beforeEach ->
+            ab.paintGrid()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "calls paintRow y with y = [0..cvTop.height-1] by size.", ->
+            for y in [0..ab.cvTop.height-1] by ab.size
+                expect(ab.paintRow).toHaveBeenCalledWith y
+
+        it "returns null", ->
+            expect(ab.paintGrid()).toBeNull()
