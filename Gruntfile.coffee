@@ -1,17 +1,23 @@
-'use strict'
+"use strict"
 
 module.exports = (grunt) ->
 
     
-    require('load-grunt-tasks')(grunt); # Load grunt tasks automatically
-    require('time-grunt')(grunt); # Time grunt
+    require("load-grunt-tasks")(grunt); # Load grunt tasks automatically
+    require("time-grunt")(grunt);       # Time grunt
 
     grunt.initConfig
 
         coffee:
             build:
-                src: ['src/*.coffee']
-                dest: 'abercrombie.js'
+                src: ["src/*.coffee"]
+                dest: "abercrombie.js"
+            specs:
+                src: ["spec/*.spec.coffee"]
+                dest: "spec/specs.js"
+            helpers:
+                src: ["spec/*.helper.coffee"]
+                dest: "spec/helpers.js"
 
         connect:
             dev:
@@ -26,9 +32,21 @@ module.exports = (grunt) ->
                     livereload: 8081
                 files: ["src/**/*"]
                 tasks: ["build"]
+            test:
+                files: ["**/*.coffee"]
+                tasks: ["coffee", "jasmine:unit"]
+
+        jasmine:
+            unit:
+                src: "abercrombie.js"
+                options:
+                    specs: "spec/specs.js"
+                    helpers: "spec/helpers.js"
 
     grunt.registerTask "test", [
-        "karma:unit"
+        "coffee"
+        "jasmine:unit"
+        "watch:test"
     ]
 
     grunt.registerTask "build", [

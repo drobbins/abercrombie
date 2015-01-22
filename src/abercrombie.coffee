@@ -1,55 +1,69 @@
-# About this Module
-version = "0.0.1"
-id      = "abercrombie"
+class Abercrombie
+    constructor: ->
+        @id      = "abercrombie"
+        @version = "0.0.1"
+        @size    = 50               # Default px size of grid/probe.
+        @Abercrombie = Abercrombie  # Abercrombie-ception
 
-# Say Hello
-imagejs.msg "#{id} version #{version} loaded."
+    refresh: ->
+        @cvTop = document.getElementById "cvTop"
+        @ctx   = @cvTop.getContext "2d"
 
-
-# Data
-a =
-    size: 50
-
-
-# The magic (tm) happens here
-abercrombie = imagejs.modules[id] =
     alignCanvases: ->
-        cvTop = abercrombie.getCanvas()
-        cvBase = document.getElementById("cvBase")
-        cvTop.style.left=cvBase.offsetLeft;
-        cvTop.style.top=cvBase.offsetTop;
+        @refresh()
+        cvBase            = document.getElementById("cvBase")
+        @cvTop.style.left = cvBase.offsetLeft;
+        @cvTop.style.top  = cvBase.offsetTop;
+
     getCanvas: -> document.getElementById("cvTop")
-    getContext: -> abercrombie.getCanvas().getContext("2d")
+
+    getContext: -> @getCanvas().getContext("2d")
+
+    getEventCoordinates: (evt,x,y) ->
+        if not x then x = evt.clientX - evt.target.offsetLeft + window.pageXOffset
+        if not y then y = evt.clientY - evt.target.offsetTop  + window.pageYOffset
+        [x,y]
+
     paintProbe: (x,y) ->
-        ctx = abercrombie.getContext()
-        ctx.strokeRect x, y, a.size, a.size
+        @refresh()
+        @ctx.strokeRect x, y, @size, @size
+
     placeProbe: ->
-        cv = abercrombie.getCanvas()
-        cv.style.cursor = "crosshair"
-        abercrombie.alignCanvases()
-        cv.onclick = (evt,x,y) ->
-            if not x then x = evt.clientX-evt.target.offsetLeft+window.pageXOffset
-            if not y then y = evt.clientY-evt.target.offsetTop+window.pageYOffset
-            abercrombie.paintProbe(x,y)
+        @refresh()
+        @cvTop.style.cursor = "crosshair"
+        @alignCanvases()
+        @cvTop.onclick = (evt,x,y) =>
+            [x,y] = @getEventCoordinates evt, x, y
+            @paintProbe(x,y)
+
     paintGrid: ->
-        cv = abercrombie.getCanvas()
-        for y in [0..cv.height-1] by a.size
-            abercrombie.paintRow(y)
+        @refresh()
+        for y in [0..@cvTop.height-1] by @size
+            @paintRow(y)
         return null
+
     paintRow: (y) ->
-        cv = abercrombie.getCanvas()
-        for x in [0..cv.width-1] by a.size
-            abercrombie.paintProbe(x,y)
+        @refresh()
+        for x in [0..@cvTop.width-1] by @size
+            @paintProbe(x,y)
         return null
 
+# Instantiate Abercrombie
+abercrombie = window.abercrombie = window.ab = new Abercrombie()
 
-window.ab = abercrombie
+if imagejs?
 
-# Create the Menu
-name = "Abercrombie (#{version})"
-menu =
-    "Clear": -> abercrombie.getContext().clearRect 0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height
-    "Place Probe": -> abercrombie.placeProbe()
-    "Show Grid": -> abercrombie.paintGrid()
-    
-jmat.gId("menu").appendChild imagejs.menu menu, name
+    # Load Module
+    imagejs.modules[abercrombie.id] = abercrombie
+
+    # Say Hello
+    imagejs.msg "#{abercrombie.id} version #{abercrombie.version} loaded."
+
+    # Create the Menu
+    name = "Abercrombie (#{abercrombie.version})"
+    menu =
+        "Clear": -> abercrombie.getContext().clearRect 0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height
+        "Place Probe": -> abercrombie.placeProbe()
+        "Show Grid": -> abercrombie.paintGrid()
+        
+    document.getElementById("menu")?.appendChild? imagejs.menu menu, name

@@ -1,84 +1,107 @@
 (function() {
-  var a, abercrombie, id, menu, name, version;
+  var Abercrombie, abercrombie, menu, name, _ref;
 
-  version = "0.0.1";
+  Abercrombie = (function() {
+    function Abercrombie() {
+      this.id = "abercrombie";
+      this.version = "0.0.1";
+      this.size = 50;
+      this.Abercrombie = Abercrombie;
+    }
 
-  id = "abercrombie";
+    Abercrombie.prototype.refresh = function() {
+      this.cvTop = document.getElementById("cvTop");
+      return this.ctx = this.cvTop.getContext("2d");
+    };
 
-  imagejs.msg("" + id + " version " + version + " loaded.");
-
-  a = {
-    size: 50
-  };
-
-  abercrombie = imagejs.modules[id] = {
-    alignCanvases: function() {
-      var cvBase, cvTop;
-      cvTop = abercrombie.getCanvas();
+    Abercrombie.prototype.alignCanvases = function() {
+      var cvBase;
+      this.refresh();
       cvBase = document.getElementById("cvBase");
-      cvTop.style.left = cvBase.offsetLeft;
-      return cvTop.style.top = cvBase.offsetTop;
-    },
-    getCanvas: function() {
+      this.cvTop.style.left = cvBase.offsetLeft;
+      return this.cvTop.style.top = cvBase.offsetTop;
+    };
+
+    Abercrombie.prototype.getCanvas = function() {
       return document.getElementById("cvTop");
-    },
-    getContext: function() {
-      return abercrombie.getCanvas().getContext("2d");
-    },
-    paintProbe: function(x, y) {
-      var ctx;
-      ctx = abercrombie.getContext();
-      return ctx.strokeRect(x, y, a.size, a.size);
-    },
-    placeProbe: function() {
-      var cv;
-      cv = abercrombie.getCanvas();
-      cv.style.cursor = "crosshair";
-      abercrombie.alignCanvases();
-      return cv.onclick = function(evt, x, y) {
-        if (!x) {
-          x = evt.clientX - evt.target.offsetLeft + window.pageXOffset;
-        }
-        if (!y) {
-          y = evt.clientY - evt.target.offsetTop + window.pageYOffset;
-        }
-        return abercrombie.paintProbe(x, y);
-      };
-    },
-    paintGrid: function() {
-      var cv, y, _i, _ref, _ref1;
-      cv = abercrombie.getCanvas();
-      for (y = _i = 0, _ref = cv.height - 1, _ref1 = a.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; y = _i += _ref1) {
-        abercrombie.paintRow(y);
+    };
+
+    Abercrombie.prototype.getContext = function() {
+      return this.getCanvas().getContext("2d");
+    };
+
+    Abercrombie.prototype.getEventCoordinates = function(evt, x, y) {
+      if (!x) {
+        x = evt.clientX - evt.target.offsetLeft + window.pageXOffset;
+      }
+      if (!y) {
+        y = evt.clientY - evt.target.offsetTop + window.pageYOffset;
+      }
+      return [x, y];
+    };
+
+    Abercrombie.prototype.paintProbe = function(x, y) {
+      this.refresh();
+      return this.ctx.strokeRect(x, y, this.size, this.size);
+    };
+
+    Abercrombie.prototype.placeProbe = function() {
+      this.refresh();
+      this.cvTop.style.cursor = "crosshair";
+      this.alignCanvases();
+      return this.cvTop.onclick = (function(_this) {
+        return function(evt, x, y) {
+          var _ref;
+          _ref = _this.getEventCoordinates(evt, x, y), x = _ref[0], y = _ref[1];
+          return _this.paintProbe(x, y);
+        };
+      })(this);
+    };
+
+    Abercrombie.prototype.paintGrid = function() {
+      var y, _i, _ref, _ref1;
+      this.refresh();
+      for (y = _i = 0, _ref = this.cvTop.height - 1, _ref1 = this.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; y = _i += _ref1) {
+        this.paintRow(y);
       }
       return null;
-    },
-    paintRow: function(y) {
-      var cv, x, _i, _ref, _ref1;
-      cv = abercrombie.getCanvas();
-      for (x = _i = 0, _ref = cv.width - 1, _ref1 = a.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; x = _i += _ref1) {
-        abercrombie.paintProbe(x, y);
+    };
+
+    Abercrombie.prototype.paintRow = function(y) {
+      var x, _i, _ref, _ref1;
+      this.refresh();
+      for (x = _i = 0, _ref = this.cvTop.width - 1, _ref1 = this.size; _ref1 > 0 ? _i <= _ref : _i >= _ref; x = _i += _ref1) {
+        this.paintProbe(x, y);
       }
       return null;
+    };
+
+    return Abercrombie;
+
+  })();
+
+  abercrombie = window.abercrombie = window.ab = new Abercrombie();
+
+  if (typeof imagejs !== "undefined" && imagejs !== null) {
+    imagejs.modules[abercrombie.id] = abercrombie;
+    imagejs.msg("" + abercrombie.id + " version " + abercrombie.version + " loaded.");
+    name = "Abercrombie (" + abercrombie.version + ")";
+    menu = {
+      "Clear": function() {
+        return abercrombie.getContext().clearRect(0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height);
+      },
+      "Place Probe": function() {
+        return abercrombie.placeProbe();
+      },
+      "Show Grid": function() {
+        return abercrombie.paintGrid();
+      }
+    };
+    if ((_ref = document.getElementById("menu")) != null) {
+      if (typeof _ref.appendChild === "function") {
+        _ref.appendChild(imagejs.menu(menu, name));
+      }
     }
-  };
-
-  window.ab = abercrombie;
-
-  name = "Abercrombie (" + version + ")";
-
-  menu = {
-    "Clear": function() {
-      return abercrombie.getContext().clearRect(0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height);
-    },
-    "Place Probe": function() {
-      return abercrombie.placeProbe();
-    },
-    "Show Grid": function() {
-      return abercrombie.paintGrid();
-    }
-  };
-
-  jmat.gId("menu").appendChild(imagejs.menu(menu, name));
+  }
 
 }).call(this);
