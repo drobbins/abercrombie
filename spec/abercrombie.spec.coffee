@@ -1,21 +1,26 @@
 describe "Abercrombie", ->
 
+    ab = null
+
+    beforeEach ->
+        ab = new abercrombie.Abercrombie()
+
     it "Defines its version.", ->
-        expect(abercrombie.version).toMatch /^\d\.\d\.\d$/
+        expect(ab.version).toMatch /^\d\.\d\.\d$/
 
     it "Defines its id.", ->
-        expect(abercrombie.id).toEqual "abercrombie"
+        expect(ab.id).toEqual "abercrombie"
 
     it "Is an Abercrombie", ->
         # abercrombie is an instanceof abercrombie.Abercrombie 
-        expect(abercrombie).toEqual jasmine.any abercrombie.Abercrombie
+        expect(ab).toEqual jasmine.any abercrombie.Abercrombie
 
     it "Defines its grid size", ->
-        expect(abercrombie.size).toEqual jasmine.any Number
+        expect(ab.size).toEqual jasmine.any Number
 
     describe ".refresh", ->
 
-        ab = cvTop = ctx = null
+        cvTop = ctx = null
 
         beforeEach ->
             cvTop = document.createElement "canvas"
@@ -28,7 +33,6 @@ describe "Abercrombie", ->
                         else return gId id
 
         beforeEach ->
-            ab = new abercrombie.Abercrombie()
             ab.refresh()
 
         it "Puts the current context and canvas on itself", ->

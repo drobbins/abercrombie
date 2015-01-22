@@ -1,20 +1,25 @@
 (function() {
   describe("Abercrombie", function() {
+    var ab;
+    ab = null;
+    beforeEach(function() {
+      return ab = new abercrombie.Abercrombie();
+    });
     it("Defines its version.", function() {
-      return expect(abercrombie.version).toMatch(/^\d\.\d\.\d$/);
+      return expect(ab.version).toMatch(/^\d\.\d\.\d$/);
     });
     it("Defines its id.", function() {
-      return expect(abercrombie.id).toEqual("abercrombie");
+      return expect(ab.id).toEqual("abercrombie");
     });
     it("Is an Abercrombie", function() {
-      return expect(abercrombie).toEqual(jasmine.any(abercrombie.Abercrombie));
+      return expect(ab).toEqual(jasmine.any(abercrombie.Abercrombie));
     });
     it("Defines its grid size", function() {
-      return expect(abercrombie.size).toEqual(jasmine.any(Number));
+      return expect(ab.size).toEqual(jasmine.any(Number));
     });
     return describe(".refresh", function() {
-      var ab, ctx, cvTop;
-      ab = cvTop = ctx = null;
+      var ctx, cvTop;
+      cvTop = ctx = null;
       beforeEach(function() {
         var gId;
         cvTop = document.createElement("canvas");
@@ -31,7 +36,6 @@
         });
       });
       beforeEach(function() {
-        ab = new abercrombie.Abercrombie();
         return ab.refresh();
       });
       return it("Puts the current context and canvas on itself", function() {
