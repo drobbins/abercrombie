@@ -1,10 +1,10 @@
 {
   "name": "abercrombie",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Basic stereology for ImageJS",
   "main": "abercrombie.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt unit"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,6 @@
     "grunt-contrib-watch": "^0.6.1",
     "load-grunt-tasks": "^2.0.0",
     "time-grunt": "^1.0.0"
-  }
+  },
+  "private": true
 }
