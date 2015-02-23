@@ -211,7 +211,7 @@
         return expect(location.y < ab.cvTop.height).toBeTruthy();
       });
     });
-    return describe(".getPaddedRandomLocation", function() {
+    describe(".getPaddedRandomLocation", function() {
       var cvSize, location;
       location = null;
       cvSize = 1000;
@@ -241,6 +241,44 @@
         expect(Math.random.calls.count()).toEqual(4);
         expect(location.x).toEqual(cvSize * 0.75);
         return expect(location.y).toEqual(cvSize * 0.75);
+      });
+    });
+    describe(".placeRandomProbe", function() {
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        spyOn(ab, "paintProbe");
+        spyOn(ab, "getPaddedRandomLocation").and.callThrough();
+        return ab.cvTop = {
+          height: 1000,
+          width: 1000
+        };
+      });
+      beforeEach(function() {
+        return ab.placeRandomProbe();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("paints a probe at a random location.", function() {
+        expect(ab.getPaddedRandomLocation).toHaveBeenCalled();
+        return expect(ab.paintProbe).toHaveBeenCalled();
+      });
+    });
+    return describe(".placeRandomProbes(n)", function() {
+      var n;
+      n = 15;
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        return spyOn(ab, "placeRandomProbe");
+      });
+      beforeEach(function() {
+        return ab.placeRandomProbes(n);
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("calls placeRandomProbe n times", function() {
+        return expect(ab.placeRandomProbe.calls.count()).toEqual(n);
       });
     });
   });

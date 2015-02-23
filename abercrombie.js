@@ -81,6 +81,23 @@
       })(this);
     };
 
+    Abercrombie.prototype.placeRandomProbe = function() {
+      var location;
+      this.refresh();
+      location = this.getPaddedRandomLocation();
+      return this.paintProbe(location.x, location.y);
+    };
+
+    Abercrombie.prototype.placeRandomProbes = function(count) {
+      var n, _i, _results;
+      this.refresh();
+      _results = [];
+      for (n = _i = 1; 1 <= count ? _i <= count : _i >= count; n = 1 <= count ? ++_i : --_i) {
+        _results.push(this.placeRandomProbe());
+      }
+      return _results;
+    };
+
     Abercrombie.prototype.paintGrid = function() {
       var y, _i, _ref, _ref1;
       this.refresh();
@@ -115,6 +132,12 @@
       },
       "Place Probe": function() {
         return abercrombie.placeProbe();
+      },
+      "Place Random Probe": function() {
+        return abercrombie.placeRandomProbe();
+      },
+      "Place 10 Random Probes": function() {
+        return abercrombie.placeRandomProbes(10);
       },
       "Show Grid": function() {
         return abercrombie.paintGrid();

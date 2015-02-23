@@ -51,6 +51,15 @@ class Abercrombie
             [x,y] = @getEventCoordinates evt, x, y
             @paintProbe(x,y)
 
+    placeRandomProbe: ->
+        @refresh()
+        location = @getPaddedRandomLocation()
+        @paintProbe location.x, location.y
+    
+    placeRandomProbes: (count) ->
+        @refresh()
+        @placeRandomProbe() for n in [1..count]
+
     paintGrid: ->
         @refresh()
         for y in [0..@cvTop.height-1] by @size
@@ -79,6 +88,8 @@ if imagejs?
     menu =
         "Clear": -> abercrombie.getContext().clearRect 0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height
         "Place Probe": -> abercrombie.placeProbe()
+        "Place Random Probe": -> abercrombie.placeRandomProbe()
+        "Place 10 Random Probes": -> abercrombie.placeRandomProbes(10)
         "Show Grid": -> abercrombie.paintGrid()
         
     document.getElementById("menu")?.appendChild? imagejs.menu menu, name

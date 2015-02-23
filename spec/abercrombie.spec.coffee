@@ -223,3 +223,41 @@ describe "Abercrombie", ->
             expect(Math.random.calls.count()).toEqual 4
             expect(location.x).toEqual cvSize * 0.75
             expect(location.y).toEqual cvSize * 0.75
+
+    describe ".placeRandomProbe", ->
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            spyOn ab, "paintProbe"
+            spyOn ab, "getPaddedRandomLocation"
+                .and.callThrough()
+            ab.cvTop = 
+                height: 1000
+                width: 1000
+
+        beforeEach ->
+            ab.placeRandomProbe()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "paints a probe at a random location.", ->
+            expect(ab.getPaddedRandomLocation).toHaveBeenCalled()
+            expect(ab.paintProbe).toHaveBeenCalled()
+
+    describe ".placeRandomProbes(n)", ->
+
+        n = 15
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            spyOn ab, "placeRandomProbe"
+
+        beforeEach ->
+            ab.placeRandomProbes n
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "calls placeRandomProbe n times", ->
+            expect(ab.placeRandomProbe.calls.count()).toEqual n
