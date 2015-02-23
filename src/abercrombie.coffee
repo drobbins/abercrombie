@@ -4,6 +4,7 @@ class Abercrombie
         @version = "0.0.1"
         @size    = 50               # Default px size of grid/probe.
         @Abercrombie = Abercrombie  # Abercrombie-ception
+        @probes  = []
 
     refresh: ->
         @cvTop = document.getElementById "cvTop"
@@ -39,6 +40,14 @@ class Abercrombie
         location = @getRandomLocation() while tooCloseToEdge location
         return location
 
+    hasProbeOn: (location) ->
+        value = false
+        for probe in @probes
+            if (probe.x - @size <= location.x <= probe.x + @size) and (probe.y - @size <= location.y <= probe.y + @size)
+                value = true
+                break
+        value
+
     paintProbe: (x,y) ->
         @refresh()
         @ctx.strokeRect x, y, @size, @size
@@ -55,10 +64,21 @@ class Abercrombie
         @refresh()
         location = @getPaddedRandomLocation()
         @paintProbe location.x, location.y
+
+    placeDistinctRandomProbe: ->
+        @refresh()
+        location = @getPaddedRandomLocation()
+        location = @getPaddedRandomLocation() while @hasProbeOn location
+        @probes.push location
+        @paintProbe location.x, location.y
     
     placeRandomProbes: (count) ->
         @refresh()
         @placeRandomProbe() for n in [1..count]
+
+    placeDistinctRandomProbes: (count) ->
+        @refresh()
+        @placeDistinctRandomProbe() for n in [1..count]
 
     paintGrid: ->
         @refresh()
@@ -90,6 +110,7 @@ if imagejs?
         "Place Probe": -> abercrombie.placeProbe()
         "Place Random Probe": -> abercrombie.placeRandomProbe()
         "Place 10 Random Probes": -> abercrombie.placeRandomProbes(10)
+        "Place 10 Distinct Random Probes": -> abercrombie.placeDistinctRandomProbes(10)
         "Show Grid": -> abercrombie.paintGrid()
         
     document.getElementById("menu")?.appendChild? imagejs.menu menu, name

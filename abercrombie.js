@@ -7,6 +7,7 @@
       this.version = "0.0.1";
       this.size = 50;
       this.Abercrombie = Abercrombie;
+      this.probes = [];
     }
 
     Abercrombie.prototype.refresh = function() {
@@ -63,6 +64,20 @@
       return location;
     };
 
+    Abercrombie.prototype.hasProbeOn = function(location) {
+      var probe, value, _i, _len, _ref, _ref1, _ref2;
+      value = false;
+      _ref = this.probes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        probe = _ref[_i];
+        if (((probe.x - this.size <= (_ref1 = location.x) && _ref1 <= probe.x + this.size)) && ((probe.y - this.size <= (_ref2 = location.y) && _ref2 <= probe.y + this.size))) {
+          value = true;
+          break;
+        }
+      }
+      return value;
+    };
+
     Abercrombie.prototype.paintProbe = function(x, y) {
       this.refresh();
       return this.ctx.strokeRect(x, y, this.size, this.size);
@@ -88,12 +103,33 @@
       return this.paintProbe(location.x, location.y);
     };
 
+    Abercrombie.prototype.placeDistinctRandomProbe = function() {
+      var location;
+      this.refresh();
+      location = this.getPaddedRandomLocation();
+      while (this.hasProbeOn(location)) {
+        location = this.getPaddedRandomLocation();
+      }
+      this.probes.push(location);
+      return this.paintProbe(location.x, location.y);
+    };
+
     Abercrombie.prototype.placeRandomProbes = function(count) {
       var n, _i, _results;
       this.refresh();
       _results = [];
       for (n = _i = 1; 1 <= count ? _i <= count : _i >= count; n = 1 <= count ? ++_i : --_i) {
         _results.push(this.placeRandomProbe());
+      }
+      return _results;
+    };
+
+    Abercrombie.prototype.placeDistinctRandomProbes = function(count) {
+      var n, _i, _results;
+      this.refresh();
+      _results = [];
+      for (n = _i = 1; 1 <= count ? _i <= count : _i >= count; n = 1 <= count ? ++_i : --_i) {
+        _results.push(this.placeDistinctRandomProbe());
       }
       return _results;
     };
@@ -138,6 +174,9 @@
       },
       "Place 10 Random Probes": function() {
         return abercrombie.placeRandomProbes(10);
+      },
+      "Place 10 Distinct Random Probes": function() {
+        return abercrombie.placeDistinctRandomProbes(10);
       },
       "Show Grid": function() {
         return abercrombie.paintGrid();

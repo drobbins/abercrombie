@@ -264,7 +264,7 @@
         return expect(ab.paintProbe).toHaveBeenCalled();
       });
     });
-    return describe(".placeRandomProbes(n)", function() {
+    describe(".placeRandomProbes(n)", function() {
       var n;
       n = 15;
       beforeEach(function() {
@@ -279,6 +279,67 @@
       });
       return it("calls placeRandomProbe n times", function() {
         return expect(ab.placeRandomProbe.calls.count()).toEqual(n);
+      });
+    });
+    describe(".placeDistinctRandomProbe", function() {
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        spyOn(ab, "paintProbe");
+        return ab.cvTop = {
+          height: 1000,
+          width: 1000
+        };
+      });
+      beforeEach(function() {
+        return ab.placeDistinctRandomProbe();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("pushes a probe location onto @probes", function() {
+        return expect(ab.probes.length).toEqual(1);
+      });
+    });
+    return describe(".hasProbeOn(location)", function() {
+      var includedProbe, notIncludedProbe, overlappingProbe, probes;
+      includedProbe = {
+        x: 1,
+        y: 1
+      };
+      notIncludedProbe = {
+        x: 500,
+        y: 500
+      };
+      overlappingProbe = {
+        x: 30,
+        y: 25
+      };
+      probes = [
+        {
+          x: 1,
+          y: 1
+        }, {
+          x: 150,
+          y: 150
+        }, {
+          x: 1,
+          y: 150
+        }, {
+          x: 150,
+          y: 1
+        }
+      ];
+      beforeEach(function() {
+        return ab.probes = probes;
+      });
+      it("returns true if @probes contains location", function() {
+        return expect(ab.hasProbeOn(includedProbe)).toBeTruthy();
+      });
+      it("returns false if @probes doesn't contain location", function() {
+        return expect(ab.hasProbeOn(notIncludedProbe)).toBeFalsy();
+      });
+      return it("returns true if @probes contains a probe @size from location", function() {
+        return expect(ab.hasProbeOn(overlappingProbe)).toBeTruthy();
       });
     });
   });

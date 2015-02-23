@@ -261,3 +261,47 @@ describe "Abercrombie", ->
 
         it "calls placeRandomProbe n times", ->
             expect(ab.placeRandomProbe.calls.count()).toEqual n
+
+    describe ".placeDistinctRandomProbe", ->
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            spyOn ab, "paintProbe"
+            ab.cvTop = 
+                height: 1000
+                width: 1000
+
+        beforeEach ->
+            ab.placeDistinctRandomProbe()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "pushes a probe location onto @probes", ->
+            expect(ab.probes.length).toEqual 1
+
+    describe ".hasProbeOn(location)", ->
+
+        includedProbe    = { x: 1, y: 1 }
+        notIncludedProbe = { x: 500, y: 500 }
+        overlappingProbe = { x: 30, y: 25}
+
+        probes = [
+            { x: 1, y: 1 }
+            { x: 150, y: 150 }
+            { x: 1, y: 150 }
+            { x: 150, y: 1 }
+        ]
+
+
+        beforeEach ->
+            ab.probes = probes
+
+        it "returns true if @probes contains location", ->
+            expect(ab.hasProbeOn includedProbe).toBeTruthy()
+
+        it "returns false if @probes doesn't contain location", ->
+            expect(ab.hasProbeOn notIncludedProbe).toBeFalsy()
+
+        it "returns true if @probes contains a probe @size from location", ->
+            expect(ab.hasProbeOn overlappingProbe).toBeTruthy()
