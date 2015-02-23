@@ -175,3 +175,51 @@ describe "Abercrombie", ->
 
         it "returns null", ->
             expect(ab.paintGrid()).toBeNull()
+
+    describe ".getRandomLocation", ->
+
+        location = null
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            ab.cvTop = 
+                height: 1000
+                width: 1000
+
+        beforeEach ->
+            location = ab.getRandomLocation()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "returns a random location in the image.", ->
+            expect(location.x > -1).toBeTruthy()
+            expect(location.y > -1).toBeTruthy()
+            expect(location.x < ab.cvTop.width).toBeTruthy()
+            expect(location.y < ab.cvTop.height).toBeTruthy()
+
+    describe ".getPaddedRandomLocation", ->
+        
+        location = null
+        cvSize = 1000
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            callCount = 0
+            ab.cvTop = 
+                height: cvSize
+                width: cvSize
+            spyOn Math, "random"
+                .and.callFake ->
+                    if callCount++ < 2 then 1.0 else 0.75
+
+        beforeEach ->
+            location = ab.getPaddedRandomLocation()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "returns a random location in the image, at least .size from the right and bottom edges", ->
+            expect(Math.random.calls.count()).toEqual 4
+            expect(location.x).toEqual cvSize * 0.75
+            expect(location.y).toEqual cvSize * 0.75

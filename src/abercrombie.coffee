@@ -24,6 +24,21 @@ class Abercrombie
         if not y then y = evt.clientY - evt.target.offsetTop  + window.pageYOffset
         [x,y]
 
+    getRandomLocation: ->
+        @refresh()
+        return {
+            x: @cvTop.width * Math.random()
+            y: @cvTop.height * Math.random()
+        }
+
+    getPaddedRandomLocation: ->
+        @refresh()
+        tooCloseToEdge = (location) =>
+            location.x > @cvTop.width - @size or location.y > @cvTop.height - @size
+        location = @getRandomLocation()
+        location = @getRandomLocation() while tooCloseToEdge location
+        return location
+
     paintProbe: (x,y) ->
         @refresh()
         @ctx.strokeRect x, y, @size, @size

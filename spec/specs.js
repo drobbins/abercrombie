@@ -162,7 +162,7 @@
         return expect(ab.paintRow(y)).toBeNull();
       });
     });
-    return describe(".paintGrid", function() {
+    describe(".paintGrid", function() {
       beforeEach(function() {
         spyOn(ab, "refresh");
         spyOn(ab, "paintRow");
@@ -186,6 +186,61 @@
       });
       return it("returns null", function() {
         return expect(ab.paintGrid()).toBeNull();
+      });
+    });
+    describe(".getRandomLocation", function() {
+      var location;
+      location = null;
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        return ab.cvTop = {
+          height: 1000,
+          width: 1000
+        };
+      });
+      beforeEach(function() {
+        return location = ab.getRandomLocation();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("returns a random location in the image.", function() {
+        expect(location.x > -1).toBeTruthy();
+        expect(location.y > -1).toBeTruthy();
+        expect(location.x < ab.cvTop.width).toBeTruthy();
+        return expect(location.y < ab.cvTop.height).toBeTruthy();
+      });
+    });
+    return describe(".getPaddedRandomLocation", function() {
+      var cvSize, location;
+      location = null;
+      cvSize = 1000;
+      beforeEach(function() {
+        var callCount;
+        spyOn(ab, "refresh");
+        callCount = 0;
+        ab.cvTop = {
+          height: cvSize,
+          width: cvSize
+        };
+        return spyOn(Math, "random").and.callFake(function() {
+          if (callCount++ < 2) {
+            return 1.0;
+          } else {
+            return 0.75;
+          }
+        });
+      });
+      beforeEach(function() {
+        return location = ab.getPaddedRandomLocation();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("returns a random location in the image, at least .size from the right and bottom edges", function() {
+        expect(Math.random.calls.count()).toEqual(4);
+        expect(location.x).toEqual(cvSize * 0.75);
+        return expect(location.y).toEqual(cvSize * 0.75);
       });
     });
   });

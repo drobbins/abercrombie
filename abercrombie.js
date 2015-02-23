@@ -40,6 +40,29 @@
       return [x, y];
     };
 
+    Abercrombie.prototype.getRandomLocation = function() {
+      this.refresh();
+      return {
+        x: this.cvTop.width * Math.random(),
+        y: this.cvTop.height * Math.random()
+      };
+    };
+
+    Abercrombie.prototype.getPaddedRandomLocation = function() {
+      var location, tooCloseToEdge;
+      this.refresh();
+      tooCloseToEdge = (function(_this) {
+        return function(location) {
+          return location.x > _this.cvTop.width - _this.size || location.y > _this.cvTop.height - _this.size;
+        };
+      })(this);
+      location = this.getRandomLocation();
+      while (tooCloseToEdge(location)) {
+        location = this.getRandomLocation();
+      }
+      return location;
+    };
+
     Abercrombie.prototype.paintProbe = function(x, y) {
       this.refresh();
       return this.ctx.strokeRect(x, y, this.size, this.size);
