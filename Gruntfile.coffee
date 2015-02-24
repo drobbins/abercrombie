@@ -49,6 +49,11 @@ module.exports = (grunt) ->
         "watch:test"
     ]
 
+    grunt.registerTask "unit", [
+        "coffee"
+        "jasmine:unit"
+    ]
+
     grunt.registerTask "build", [
         "coffee:build"
     ]
