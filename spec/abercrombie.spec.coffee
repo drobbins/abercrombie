@@ -136,6 +136,8 @@ describe "Abercrombie", ->
             expect(xx).toEqual evt.clientX - evt.target.offsetLeft + window.pageXOffset
             expect(yy).toEqual evt.clientY - evt.target.offsetTop  + window.pageYOffset
 
+
+
     describe ".paintRow", ->
 
         beforeEach ->
@@ -155,6 +157,8 @@ describe "Abercrombie", ->
 
         it "returns null", ->
             expect(ab.paintRow(y)).toBeNull()
+
+
 
     describe ".paintGrid", ->
 
