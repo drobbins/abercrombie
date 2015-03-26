@@ -162,7 +162,7 @@
         return expect(ab.paintRow(y)).toBeNull();
       });
     });
-    return describe(".paintGrid", function() {
+    describe(".paintGrid", function() {
       beforeEach(function() {
         spyOn(ab, "refresh");
         spyOn(ab, "paintRow");
@@ -186,6 +186,23 @@
       });
       return it("returns null", function() {
         return expect(ab.paintGrid()).toBeNull();
+      });
+    });
+    return describe(".getNearestVertexToEvent", function() {
+      var event, eventCoordinates, expectedVertext, vertex;
+      vertex = null;
+      eventCoordinates = [123, 80];
+      expectedVertext = [100, 100];
+      event = "my event";
+      beforeEach(function() {
+        spyOn(ab, "getEventCoordinates").and.returnValue(eventCoordinates);
+        return vertex = ab.getNearestVertexToEvent(event);
+      });
+      it("gets the eventCoordinates from getEventCoordinates", function() {
+        return expect(ab.getEventCoordinates).toHaveBeenCalledWith(event, void 0, void 0);
+      });
+      return it("returns the nearest vertex coordinates", function() {
+        return expect(vertex).toEqual(expectedVertext);
       });
     });
   });

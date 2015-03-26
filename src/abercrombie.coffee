@@ -24,6 +24,12 @@ class Abercrombie
         if not y then y = evt.clientY - evt.target.offsetTop  + window.pageYOffset
         [x,y]
 
+    getNearestVertexToEvent: (evt, xx, yy) ->
+        [x,y] = @getEventCoordinates evt, xx, yy
+        vx = if x - Math.floor(x/@size)*@size > (@size/2) then Math.ceil(x/@size)*@size else Math.floor(x/@size)*@size
+        vy = if y - Math.floor(y/@size)*@size > (@size/2) then Math.ceil(y/@size)*@size else Math.floor(y/@size)*@size
+        [vx, vy]
+
     paintProbe: (x,y) ->
         @refresh()
         @ctx.strokeRect x, y, @size, @size

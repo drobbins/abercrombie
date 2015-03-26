@@ -40,6 +40,14 @@
       return [x, y];
     };
 
+    Abercrombie.prototype.getNearestVertexToEvent = function(evt, xx, yy) {
+      var vx, vy, x, y, _ref;
+      _ref = this.getEventCoordinates(evt, xx, yy), x = _ref[0], y = _ref[1];
+      vx = x - Math.floor(x / this.size) * this.size > (this.size / 2) ? Math.ceil(x / this.size) * this.size : Math.floor(x / this.size) * this.size;
+      vy = y - Math.floor(y / this.size) * this.size > (this.size / 2) ? Math.ceil(y / this.size) * this.size : Math.floor(y / this.size) * this.size;
+      return [vx, vy];
+    };
+
     Abercrombie.prototype.paintProbe = function(x, y) {
       this.refresh();
       return this.ctx.strokeRect(x, y, this.size, this.size);

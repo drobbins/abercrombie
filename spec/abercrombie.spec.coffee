@@ -179,3 +179,23 @@ describe "Abercrombie", ->
 
         it "returns null", ->
             expect(ab.paintGrid()).toBeNull()
+
+
+
+    describe ".getNearestVertexToEvent", ->
+
+        vertex = null
+        eventCoordinates = [123,80]
+        expectedVertext = [100,100]
+        event = "my event"
+
+        beforeEach ->
+            spyOn ab, "getEventCoordinates"
+                .and.returnValue eventCoordinates
+            vertex = ab.getNearestVertexToEvent event
+
+        it "gets the eventCoordinates from getEventCoordinates", ->
+            expect(ab.getEventCoordinates).toHaveBeenCalledWith event, undefined, undefined
+
+        it "returns the nearest vertex coordinates", ->
+            expect(vertex).toEqual expectedVertext
