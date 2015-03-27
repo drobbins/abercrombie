@@ -199,3 +199,53 @@ describe "Abercrombie", ->
 
         it "returns the nearest vertex coordinates", ->
             expect(vertex).toEqual expectedVertext
+
+
+
+    describe ".markVertices", ->
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            spyOn ab, "alignCanvases"
+            ab.cvTop = style: {}
+
+        beforeEach ->
+            ab.markVertices()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "calls alignCanvases", ->
+            expect(ab.alignCanvases).toHaveBeenCalled()
+
+        it "changes cvTop's cursor style to crosshair", ->
+            expect(ab.cvTop.style.cursor).toBe "crosshair"
+
+        it "listens at onclick on cvTop", ->
+            expect(ab.cvTop.onclick).toEqual jasmine.any Function
+
+        it "creates an empty object @markedVertices", ->
+            expect(ab.markedVertices).toEqual jasmine.any Object
+
+        describe "click listener", ->
+
+            vertex = [100,100]
+
+            beforeEach ->
+                spyOn ab, "getNearestVertexToEvent"
+                    .and.returnValue vertex
+                ab.cvTop.onclick()
+
+            it "gets the nearest vertex", ->
+                expect(ab.getNearestVertexToEvent).toHaveBeenCalled()
+
+            it "toggles the nearest vertex into/out of @markedVertices", ->
+                expectedMarkedVertices = {}
+                expectedMarkedVertices[JSON.stringify(vertex)] = true
+
+                #toggled on in beforeEach
+                expect(ab.markedVertices).toEqual expectedMarkedVertices
+
+                #toggle off
+                ab.cvTop.onclick()
+                expect(ab.markedVertices).toEqual {}

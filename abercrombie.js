@@ -48,6 +48,24 @@
       return [vx, vy];
     };
 
+    Abercrombie.prototype.markVertices = function() {
+      this.refresh();
+      this.alignCanvases();
+      this.cvTop.style.cursor = "crosshair";
+      this.markedVertices = {};
+      return this.cvTop.onclick = (function(_this) {
+        return function(evt, x, y) {
+          var vertex;
+          vertex = _this.getNearestVertexToEvent(evt, x, y);
+          if (_this.markedVertices[JSON.stringify(vertex)]) {
+            return delete _this.markedVertices[JSON.stringify(vertex)];
+          } else {
+            return _this.markedVertices[JSON.stringify(vertex)] = true;
+          }
+        };
+      })(this);
+    };
+
     Abercrombie.prototype.paintProbe = function(x, y) {
       this.refresh();
       return this.ctx.strokeRect(x, y, this.size, this.size);

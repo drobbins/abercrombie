@@ -188,7 +188,7 @@
         return expect(ab.paintGrid()).toBeNull();
       });
     });
-    return describe(".getNearestVertexToEvent", function() {
+    describe(".getNearestVertexToEvent", function() {
       var event, eventCoordinates, expectedVertext, vertex;
       vertex = null;
       eventCoordinates = [123, 80];
@@ -203,6 +203,52 @@
       });
       return it("returns the nearest vertex coordinates", function() {
         return expect(vertex).toEqual(expectedVertext);
+      });
+    });
+    return describe(".markVertices", function() {
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        spyOn(ab, "alignCanvases");
+        return ab.cvTop = {
+          style: {}
+        };
+      });
+      beforeEach(function() {
+        return ab.markVertices();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      it("calls alignCanvases", function() {
+        return expect(ab.alignCanvases).toHaveBeenCalled();
+      });
+      it("changes cvTop's cursor style to crosshair", function() {
+        return expect(ab.cvTop.style.cursor).toBe("crosshair");
+      });
+      it("listens at onclick on cvTop", function() {
+        return expect(ab.cvTop.onclick).toEqual(jasmine.any(Function));
+      });
+      it("creates an empty object @markedVertices", function() {
+        return expect(ab.markedVertices).toEqual(jasmine.any(Object));
+      });
+      return describe("click listener", function() {
+        var vertex;
+        vertex = [100, 100];
+        beforeEach(function() {
+          spyOn(ab, "getNearestVertexToEvent").and.returnValue(vertex);
+          return ab.cvTop.onclick();
+        });
+        it("gets the nearest vertex", function() {
+          return expect(ab.getNearestVertexToEvent).toHaveBeenCalled();
+        });
+        return it("toggles the nearest vertex into/out of @markedVertices", function() {
+          var expectedMarkedVertices;
+          expectedMarkedVertices = {};
+          expectedMarkedVertices[JSON.stringify(vertex)] = true;
+          expect(ab.markedVertices).toEqual(expectedMarkedVertices);
+          ab.cvTop.onclick();
+          return expect(ab.markedVertices).toEqual({});
+        });
       });
     });
   });

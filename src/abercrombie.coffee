@@ -30,6 +30,18 @@ class Abercrombie
         vy = if y - Math.floor(y/@size)*@size > (@size/2) then Math.ceil(y/@size)*@size else Math.floor(y/@size)*@size
         [vx, vy]
 
+    markVertices: ->
+        @refresh()
+        @alignCanvases()
+        @cvTop.style.cursor = "crosshair"
+        @markedVertices = {}
+        @cvTop.onclick = (evt,x,y) =>
+            vertex = @getNearestVertexToEvent evt, x, y
+            if @markedVertices[JSON.stringify vertex]
+                delete @markedVertices[JSON.stringify vertex]
+            else
+                @markedVertices[JSON.stringify vertex] = true
+
     paintProbe: (x,y) ->
         @refresh()
         @ctx.strokeRect x, y, @size, @size
