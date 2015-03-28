@@ -71,6 +71,12 @@ class Abercrombie
             @paintProbe(x,y)
         return null
 
+    repaintMarkedVertices: ->
+        @refresh()
+        for key in Object.keys @markedVertices
+            vertex = JSON.parse key
+            @paintMarkedVertice vertex[0], vertex[1]
+
 # Instantiate Abercrombie
 abercrombie = window.abercrombie = window.ab = new Abercrombie()
 

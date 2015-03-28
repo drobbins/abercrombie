@@ -269,3 +269,26 @@ describe "Abercrombie", ->
             expectedx    = x - expectedSize/2
             expectedy    = y - expectedSize/2
             expect(ab.ctx.strokeRect).toHaveBeenCalledWith expectedx, expectedy, expectedSize, expectedSize
+
+
+
+    describe ".repaintMarkedVertices", ->
+
+        markedVertices = { "[100,150]": true, "[200,250]": true}
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            spyOn ab, "paintMarkedVertice"
+            ab.markedVertices = markedVertices
+
+        beforeEach ->
+            ab.repaintMarkedVertices()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "calls paintMarkedVertice with each vertex in @markedVertices", ->
+            expectVertex = (key) ->
+                vertex = JSON.parse key
+                expect(ab.paintMarkedVertice).toHaveBeenCalledWith vertex[0], vertex[1]
+            expectVertex key for key in Object.keys(markedVertices)

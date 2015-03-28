@@ -109,6 +109,19 @@
       return null;
     };
 
+    Abercrombie.prototype.repaintMarkedVertices = function() {
+      var key, vertex, _i, _len, _ref, _results;
+      this.refresh();
+      _ref = Object.keys(this.markedVertices);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        key = _ref[_i];
+        vertex = JSON.parse(key);
+        _results.push(this.paintMarkedVertice(vertex[0], vertex[1]));
+      }
+      return _results;
+    };
+
     return Abercrombie;
 
   })();

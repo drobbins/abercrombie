@@ -270,6 +270,39 @@
         return expect(ab.ctx.strokeRect).toHaveBeenCalledWith(expectedx, expectedy, expectedSize, expectedSize);
       });
     });
+    return describe(".repaintMarkedVertices", function() {
+      var markedVertices;
+      markedVertices = {
+        "[100,150]": true,
+        "[200,250]": true
+      };
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        spyOn(ab, "paintMarkedVertice");
+        return ab.markedVertices = markedVertices;
+      });
+      beforeEach(function() {
+        return ab.repaintMarkedVertices();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("calls paintMarkedVertice with each vertex in @markedVertices", function() {
+        var expectVertex, key, _i, _len, _ref, _results;
+        expectVertex = function(key) {
+          var vertex;
+          vertex = JSON.parse(key);
+          return expect(ab.paintMarkedVertice).toHaveBeenCalledWith(vertex[0], vertex[1]);
+        };
+        _ref = Object.keys(markedVertices);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          key = _ref[_i];
+          _results.push(expectVertex(key));
+        }
+        return _results;
+      });
+    });
   });
 
 }).call(this);
