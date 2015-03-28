@@ -41,6 +41,7 @@ class Abercrombie
                 delete @markedVertices[JSON.stringify vertex]
             else
                 @markedVertices[JSON.stringify vertex] = true
+            @repaintMarkedVertices()
 
     paintProbe: (x,y) ->
         @refresh()
@@ -94,5 +95,6 @@ if imagejs?
         "Clear": -> abercrombie.getContext().clearRect 0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height
         "Place Probe": -> abercrombie.placeProbe()
         "Show Grid": -> abercrombie.paintGrid()
+        "Mark Vertices": -> abercrombie.markVertices()
         
     document.getElementById("menu")?.appendChild? imagejs.menu menu, name

@@ -234,6 +234,7 @@ describe "Abercrombie", ->
             beforeEach ->
                 spyOn ab, "getNearestVertexToEvent"
                     .and.returnValue vertex
+                spyOn ab, "repaintMarkedVertices"
                 ab.cvTop.onclick()
 
             it "gets the nearest vertex", ->
@@ -250,6 +251,8 @@ describe "Abercrombie", ->
                 ab.cvTop.onclick()
                 expect(ab.markedVertices).toEqual {}
 
+            it "calls repaintMarkedVertices", ->
+                expect(ab.repaintMarkedVertices).toHaveBeenCalled()
 
 
     describe ".paintMarkedVertice", ->

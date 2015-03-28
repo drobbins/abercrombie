@@ -236,18 +236,22 @@
         vertex = [100, 100];
         beforeEach(function() {
           spyOn(ab, "getNearestVertexToEvent").and.returnValue(vertex);
+          spyOn(ab, "repaintMarkedVertices");
           return ab.cvTop.onclick();
         });
         it("gets the nearest vertex", function() {
           return expect(ab.getNearestVertexToEvent).toHaveBeenCalled();
         });
-        return it("toggles the nearest vertex into/out of @markedVertices", function() {
+        it("toggles the nearest vertex into/out of @markedVertices", function() {
           var expectedMarkedVertices;
           expectedMarkedVertices = {};
           expectedMarkedVertices[JSON.stringify(vertex)] = true;
           expect(ab.markedVertices).toEqual(expectedMarkedVertices);
           ab.cvTop.onclick();
           return expect(ab.markedVertices).toEqual({});
+        });
+        return it("calls repaintMarkedVertices", function() {
+          return expect(ab.repaintMarkedVertices).toHaveBeenCalled();
         });
       });
     });

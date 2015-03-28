@@ -58,10 +58,11 @@
           var vertex;
           vertex = _this.getNearestVertexToEvent(evt, x, y);
           if (_this.markedVertices[JSON.stringify(vertex)]) {
-            return delete _this.markedVertices[JSON.stringify(vertex)];
+            delete _this.markedVertices[JSON.stringify(vertex)];
           } else {
-            return _this.markedVertices[JSON.stringify(vertex)] = true;
+            _this.markedVertices[JSON.stringify(vertex)] = true;
           }
+          return _this.repaintMarkedVertices();
         };
       })(this);
     };
@@ -141,6 +142,9 @@
       },
       "Show Grid": function() {
         return abercrombie.paintGrid();
+      },
+      "Mark Vertices": function() {
+        return abercrombie.markVertices();
       }
     };
     if ((_ref = document.getElementById("menu")) != null) {
