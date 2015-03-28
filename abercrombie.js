@@ -93,6 +93,13 @@
       return null;
     };
 
+    Abercrombie.prototype.paintMarkedVertice = function(x, y) {
+      var size;
+      this.refresh();
+      size = this.size / 4;
+      return this.ctx.strokeRect(x - size / 2, y - size / 2, size, size);
+    };
+
     Abercrombie.prototype.paintRow = function(y) {
       var x, _i, _ref, _ref1;
       this.refresh();

@@ -2,8 +2,8 @@ describe "Abercrombie", ->
 
     ab = null
 
-    x = 10
-    y = 15
+    x = 100
+    y = 150
     evt =
         clientX: 25
         clientY: 25
@@ -249,3 +249,23 @@ describe "Abercrombie", ->
                 #toggle off
                 ab.cvTop.onclick()
                 expect(ab.markedVertices).toEqual {}
+
+
+
+    describe ".paintMarkedVertice", ->
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            ab.ctx = jasmine.createSpyObj "ctx", ["strokeRect"]
+
+        beforeEach ->
+            ab.paintMarkedVertice x,y
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "calls @ctx.strokeRect centered on the provided x,y and @size/4", ->
+            expectedSize = ab.size/4
+            expectedx    = x - expectedSize/2
+            expectedy    = y - expectedSize/2
+            expect(ab.ctx.strokeRect).toHaveBeenCalledWith expectedx, expectedy, expectedSize, expectedSize

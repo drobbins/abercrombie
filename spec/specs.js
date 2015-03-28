@@ -2,8 +2,8 @@
   describe("Abercrombie", function() {
     var ab, evt, x, y;
     ab = null;
-    x = 10;
-    y = 15;
+    x = 100;
+    y = 150;
     evt = {
       clientX: 25,
       clientY: 25,
@@ -205,7 +205,7 @@
         return expect(vertex).toEqual(expectedVertext);
       });
     });
-    return describe(".markVertices", function() {
+    describe(".markVertices", function() {
       beforeEach(function() {
         spyOn(ab, "refresh");
         spyOn(ab, "alignCanvases");
@@ -249,6 +249,25 @@
           ab.cvTop.onclick();
           return expect(ab.markedVertices).toEqual({});
         });
+      });
+    });
+    describe(".paintMarkedVertice", function() {
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        return ab.ctx = jasmine.createSpyObj("ctx", ["strokeRect"]);
+      });
+      beforeEach(function() {
+        return ab.paintMarkedVertice(x, y);
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("calls @ctx.strokeRect centered on the provided x,y and @size/4", function() {
+        var expectedSize, expectedx, expectedy;
+        expectedSize = ab.size / 4;
+        expectedx = x - expectedSize / 2;
+        expectedy = y - expectedSize / 2;
+        return expect(ab.ctx.strokeRect).toHaveBeenCalledWith(expectedx, expectedy, expectedSize, expectedSize);
       });
     });
   });

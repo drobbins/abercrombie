@@ -60,6 +60,11 @@ class Abercrombie
             @paintRow(y)
         return null
 
+    paintMarkedVertice: (x, y) ->
+        @refresh()
+        size = @size/4
+        @ctx.strokeRect x-size/2, y-size/2, size, size
+
     paintRow: (y) ->
         @refresh()
         for x in [0..@cvTop.width-1] by @size
