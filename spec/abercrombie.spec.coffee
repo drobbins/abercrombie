@@ -27,6 +27,9 @@ describe "Abercrombie", ->
     it "Defines its grid size", ->
         expect(ab.size).toEqual jasmine.any Number
 
+    it "Defines its probe size", ->
+        expect(ab.probeSize).toEqual jasmine.any Number
+
     describe ".refresh", ->
 
         cvTop = getContext: -> "Context"
@@ -76,7 +79,7 @@ describe "Abercrombie", ->
             expect(ab.refresh).toHaveBeenCalled()
 
         it "calls @ctx.strokeRect with the provided x,y and @size", ->
-            expect(ab.ctx.strokeRect).toHaveBeenCalledWith x,y,ab.size,ab.size
+            expect(ab.ctx.strokeRect).toHaveBeenCalledWith x,y,ab.probeSize,ab.probeSize
 
     describe ".placeProbe", ->
 
@@ -170,7 +173,7 @@ describe "Abercrombie", ->
 
         vertex = null
         eventCoordinates = [123,80]
-        expectedVertext = [100,100]
+        expectedVertex = [100,100]
         event = "my event"
 
         beforeEach ->
@@ -182,7 +185,62 @@ describe "Abercrombie", ->
             expect(ab.getEventCoordinates).toHaveBeenCalledWith event, undefined, undefined
 
         it "returns the nearest vertex coordinates", ->
-            expect(vertex).toEqual expectedVertext
+            expect(vertex).toEqual expectedVertex
+
+    describe ".getProbeVertexOfEvent", ->
+        
+        expectedVertex = [100,100]
+        eventCoordinates = [123,80]
+        event = "my event"
+        vertex = null
+        spy = null
+
+        beforeEach ->
+            spyOn ab, "getNearestVertexToEvent"
+                .and.returnValue expectedVertex
+            spy = spyOn ab, "getEventCoordinates"
+                .and.returnValue eventCoordinates
+
+        beforeEach ->
+            vertex = ab.getProbeVertexOfEvent event
+
+        it "gets the event coordinates", ->
+            expect(ab.getEventCoordinates).toHaveBeenCalledWith event, undefined, undefined
+
+        it "gets the nearest vertex", ->
+            expect(ab.getNearestVertexToEvent).toHaveBeenCalledWith event, undefined, undefined
+
+        describe "for events not in probes", ->
+
+            it "returns null if x < probe.x", ->
+                spy.and.returnValue [99,105]
+                vertex = ab.getProbeVertexOfEvent event
+                expect(vertex).toBeNull()
+
+            it "returns null if y < probe.y", ->
+                spy.and.returnValue [105,95]
+                vertex = ab.getProbeVertexOfEvent event
+                expect(vertex).toBeNull()
+
+            it "returns null if x > probe.x + probeSize", ->
+                spy.and.returnValue [111,105]
+                vertex = ab.getProbeVertexOfEvent event
+                expect(vertex).toBeNull()
+
+            it "returns null if y > probe.y + probeSize", ->
+                spy.and.returnValue [105,115]
+                vertex = ab.getProbeVertexOfEvent event
+                expect(vertex).toBeNull()
+
+        describe "for events in probes", ->
+
+            eventCoordinates = [105,105]
+
+            beforeEach ->
+                spy.and.returnValue [105,105]
+
+            it "returns the nearest vertex of the nearest probe", ->
+                expect(vertex).toEqual expectedVertex
 
     describe ".markVertices", ->
 

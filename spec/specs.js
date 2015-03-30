@@ -27,6 +27,9 @@
     it("Defines its grid size", function() {
       return expect(ab.size).toEqual(jasmine.any(Number));
     });
+    it("Defines its probe size", function() {
+      return expect(ab.probeSize).toEqual(jasmine.any(Number));
+    });
     describe(".refresh", function() {
       var cvTop;
       cvTop = {
@@ -82,7 +85,7 @@
         return expect(ab.refresh).toHaveBeenCalled();
       });
       return it("calls @ctx.strokeRect with the provided x,y and @size", function() {
-        return expect(ab.ctx.strokeRect).toHaveBeenCalledWith(x, y, ab.size, ab.size);
+        return expect(ab.ctx.strokeRect).toHaveBeenCalledWith(x, y, ab.probeSize, ab.probeSize);
       });
     });
     describe(".placeProbe", function() {
@@ -189,10 +192,10 @@
       });
     });
     describe(".getNearestVertexToEvent", function() {
-      var event, eventCoordinates, expectedVertext, vertex;
+      var event, eventCoordinates, expectedVertex, vertex;
       vertex = null;
       eventCoordinates = [123, 80];
-      expectedVertext = [100, 100];
+      expectedVertex = [100, 100];
       event = "my event";
       beforeEach(function() {
         spyOn(ab, "getEventCoordinates").and.returnValue(eventCoordinates);
@@ -202,7 +205,59 @@
         return expect(ab.getEventCoordinates).toHaveBeenCalledWith(event, void 0, void 0);
       });
       return it("returns the nearest vertex coordinates", function() {
-        return expect(vertex).toEqual(expectedVertext);
+        return expect(vertex).toEqual(expectedVertex);
+      });
+    });
+    describe(".getProbeVertexOfEvent", function() {
+      var event, eventCoordinates, expectedVertex, spy, vertex;
+      expectedVertex = [100, 100];
+      eventCoordinates = [123, 80];
+      event = "my event";
+      vertex = null;
+      spy = null;
+      beforeEach(function() {
+        spyOn(ab, "getNearestVertexToEvent").and.returnValue(expectedVertex);
+        return spy = spyOn(ab, "getEventCoordinates").and.returnValue(eventCoordinates);
+      });
+      beforeEach(function() {
+        return vertex = ab.getProbeVertexOfEvent(event);
+      });
+      it("gets the event coordinates", function() {
+        return expect(ab.getEventCoordinates).toHaveBeenCalledWith(event, void 0, void 0);
+      });
+      it("gets the nearest vertex", function() {
+        return expect(ab.getNearestVertexToEvent).toHaveBeenCalledWith(event, void 0, void 0);
+      });
+      describe("for events not in probes", function() {
+        it("returns null if x < probe.x", function() {
+          spy.and.returnValue([99, 105]);
+          vertex = ab.getProbeVertexOfEvent(event);
+          return expect(vertex).toBeNull();
+        });
+        it("returns null if y < probe.y", function() {
+          spy.and.returnValue([105, 95]);
+          vertex = ab.getProbeVertexOfEvent(event);
+          return expect(vertex).toBeNull();
+        });
+        it("returns null if x > probe.x + probeSize", function() {
+          spy.and.returnValue([111, 105]);
+          vertex = ab.getProbeVertexOfEvent(event);
+          return expect(vertex).toBeNull();
+        });
+        return it("returns null if y > probe.y + probeSize", function() {
+          spy.and.returnValue([105, 115]);
+          vertex = ab.getProbeVertexOfEvent(event);
+          return expect(vertex).toBeNull();
+        });
+      });
+      return describe("for events in probes", function() {
+        eventCoordinates = [105, 105];
+        beforeEach(function() {
+          return spy.and.returnValue([105, 105]);
+        });
+        return it("returns the nearest vertex of the nearest probe", function() {
+          return expect(vertex).toEqual(expectedVertex);
+        });
       });
     });
     describe(".markVertices", function() {

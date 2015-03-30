@@ -6,6 +6,7 @@
       this.id = "abercrombie";
       this.version = "0.0.1";
       this.size = 50;
+      this.probeSize = 10;
       this.Abercrombie = Abercrombie;
     }
 
@@ -48,6 +49,17 @@
       return [vx, vy];
     };
 
+    Abercrombie.prototype.getProbeVertexOfEvent = function(evt, xx, yy) {
+      var ex, ey, vx, vy, _ref, _ref1;
+      _ref = this.getEventCoordinates(evt, xx, yy), ex = _ref[0], ey = _ref[1];
+      _ref1 = this.getNearestVertexToEvent(evt, xx, yy), vx = _ref1[0], vy = _ref1[1];
+      if (((vx < ex && ex < vx + this.probeSize)) && ((vy < ey && ey < vy + this.probeSize))) {
+        return [vx, vy];
+      } else {
+        return null;
+      }
+    };
+
     Abercrombie.prototype.markVertices = function() {
       this.refresh();
       this.alignCanvases();
@@ -65,7 +77,7 @@
 
     Abercrombie.prototype.paintProbe = function(x, y) {
       this.refresh();
-      return this.ctx.strokeRect(x, y, this.size, this.size);
+      return this.ctx.strokeRect(x, y, this.probeSize, this.probeSize);
     };
 
     Abercrombie.prototype.placeProbe = function() {

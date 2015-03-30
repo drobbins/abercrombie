@@ -1,8 +1,9 @@
 class Abercrombie
     constructor: ->
-        @id      = "abercrombie"
-        @version = "0.0.1"
-        @size    = 50               # Default px size of grid/probe.
+        @id        = "abercrombie"
+        @version   = "0.0.1"
+        @size      = 50               # Default px size of grid
+        @probeSize = 10             # Default px size of probes
         @Abercrombie = Abercrombie  # Abercrombie-ception
 
     refresh: ->
@@ -30,6 +31,14 @@ class Abercrombie
         vy = if y - Math.floor(y/@size)*@size > (@size/2) then Math.ceil(y/@size)*@size else Math.floor(y/@size)*@size
         [vx, vy]
 
+    getProbeVertexOfEvent: (evt, xx, yy) ->
+        [ex, ey] = @getEventCoordinates evt, xx, yy
+        [vx, vy] = @getNearestVertexToEvent evt, xx, yy
+        if (vx < ex < vx + @probeSize) and (vy < ey < vy + @probeSize)
+            return [vx, vy]
+        else
+            return null
+
     markVertices: ->
         @refresh()
         @alignCanvases()
@@ -42,7 +51,7 @@ class Abercrombie
 
     paintProbe: (x,y) ->
         @refresh()
-        @ctx.strokeRect x, y, @size, @size
+        @ctx.strokeRect x, y, @probeSize, @probeSize
 
     placeProbe: ->
         @refresh()
