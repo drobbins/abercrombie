@@ -27,8 +27,6 @@ describe "Abercrombie", ->
     it "Defines its grid size", ->
         expect(ab.size).toEqual jasmine.any Number
 
-
-
     describe ".refresh", ->
 
         cvTop = getContext: -> "Context"
@@ -44,8 +42,6 @@ describe "Abercrombie", ->
             expect(document.getElementById).toHaveBeenCalledWith "cvTop"
             expect(ab.cvTop).toBe cvTop
             expect(ab.ctx).toBe cvTop.getContext()
-
-
 
     describe ".alignCanvases", ->
 
@@ -67,8 +63,6 @@ describe "Abercrombie", ->
             expect(ab.cvTop.style.left).toEqual cvBase.offsetLeft
             expect(ab.cvTop.style.top).toEqual cvBase.offsetTop
 
-
-
     describe ".paintProbe", ->
 
         beforeEach ->
@@ -83,8 +77,6 @@ describe "Abercrombie", ->
 
         it "calls @ctx.strokeRect with the provided x,y and @size", ->
             expect(ab.ctx.strokeRect).toHaveBeenCalledWith x,y,ab.size,ab.size
-
-
 
     describe ".placeProbe", ->
 
@@ -122,8 +114,6 @@ describe "Abercrombie", ->
             it "calls paintProbe with the event coordinates", ->
                 expect(ab.paintProbe).toHaveBeenCalledWith x,y
 
-
-
     describe ".getEventCoordinates", ->
 
         it "should pass through x and y if given", ->
@@ -135,8 +125,6 @@ describe "Abercrombie", ->
             [xx,yy] = ab.getEventCoordinates evt
             expect(xx).toEqual evt.clientX - evt.target.offsetLeft + window.pageXOffset
             expect(yy).toEqual evt.clientY - evt.target.offsetTop  + window.pageYOffset
-
-
 
     describe ".paintRow", ->
 
@@ -158,8 +146,6 @@ describe "Abercrombie", ->
         it "returns null", ->
             expect(ab.paintRow(y)).toBeNull()
 
-
-
     describe ".paintGrid", ->
 
         beforeEach ->
@@ -180,8 +166,6 @@ describe "Abercrombie", ->
         it "returns null", ->
             expect(ab.paintGrid()).toBeNull()
 
-
-
     describe ".getNearestVertexToEvent", ->
 
         vertex = null
@@ -199,8 +183,6 @@ describe "Abercrombie", ->
 
         it "returns the nearest vertex coordinates", ->
             expect(vertex).toEqual expectedVertext
-
-
 
     describe ".markVertices", ->
 
@@ -254,7 +236,6 @@ describe "Abercrombie", ->
             it "calls repaintMarkedVertices", ->
                 expect(ab.repaintMarkedVertices).toHaveBeenCalled()
 
-
     describe ".paintMarkedVertice", ->
 
         beforeEach ->
@@ -272,8 +253,6 @@ describe "Abercrombie", ->
             expectedx    = x - expectedSize/2
             expectedy    = y - expectedSize/2
             expect(ab.ctx.strokeRect).toHaveBeenCalledWith expectedx, expectedy, expectedSize, expectedSize
-
-
 
     describe ".repaintMarkedVertices", ->
 
