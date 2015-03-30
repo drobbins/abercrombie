@@ -6,6 +6,7 @@
       this.id = "abercrombie";
       this.version = "0.0.1";
       this.size = 50;
+      this.probeSize = 10;
       this.Abercrombie = Abercrombie;
     }
 
@@ -20,6 +21,13 @@
       cvBase = document.getElementById("cvBase");
       this.cvTop.style.left = cvBase.offsetLeft;
       return this.cvTop.style.top = cvBase.offsetTop;
+    };
+
+    Abercrombie.prototype.clearProbe = function(x, y) {
+      var padding;
+      this.refresh();
+      padding = this.ctx.lineWidth;
+      return this.ctx.clearRect(x - padding, y - padding, this.probeSize + 2 * padding, this.probeSize + 2 * padding);
     };
 
     Abercrombie.prototype.getCanvas = function() {
@@ -48,6 +56,17 @@
       return [vx, vy];
     };
 
+    Abercrombie.prototype.getProbeVertexOfEvent = function(evt, xx, yy) {
+      var ex, ey, vx, vy, _ref, _ref1;
+      _ref = this.getEventCoordinates(evt, xx, yy), ex = _ref[0], ey = _ref[1];
+      _ref1 = this.getNearestVertexToEvent(evt, xx, yy), vx = _ref1[0], vy = _ref1[1];
+      if (((vx < ex && ex < vx + this.probeSize)) && ((vy < ey && ey < vy + this.probeSize))) {
+        return [vx, vy];
+      } else {
+        return null;
+      }
+    };
+
     Abercrombie.prototype.markVertices = function() {
       this.refresh();
       this.alignCanvases();
@@ -57,11 +76,7 @@
         return function(evt, x, y) {
           var vertex;
           vertex = _this.getNearestVertexToEvent(evt, x, y);
-          if (_this.markedVertices[JSON.stringify(vertex)]) {
-            delete _this.markedVertices[JSON.stringify(vertex)];
-          } else {
-            _this.markedVertices[JSON.stringify(vertex)] = true;
-          }
+          _this.toggleMarkedVertex(vertex);
           return _this.repaintMarkedVertices();
         };
       })(this);
@@ -69,7 +84,8 @@
 
     Abercrombie.prototype.paintProbe = function(x, y) {
       this.refresh();
-      return this.ctx.strokeRect(x, y, this.size, this.size);
+      this.ctx.strokeStyle = "#000000";
+      return this.ctx.strokeRect(x, y, this.probeSize, this.probeSize);
     };
 
     Abercrombie.prototype.placeProbe = function() {
@@ -95,10 +111,9 @@
     };
 
     Abercrombie.prototype.paintMarkedVertice = function(x, y) {
-      var size;
       this.refresh();
-      size = this.size / 4;
-      return this.ctx.strokeRect(x - size / 2, y - size / 2, size, size);
+      this.ctx.strokeStyle = "#ff0000";
+      return this.ctx.strokeRect(x, y, this.probeSize, this.probeSize);
     };
 
     Abercrombie.prototype.paintRow = function(y) {
@@ -118,9 +133,24 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
         vertex = JSON.parse(key);
-        _results.push(this.paintMarkedVertice(vertex[0], vertex[1]));
+        this.clearProbe(vertex[0], vertex[1]);
+        if (this.markedVertices[key]) {
+          _results.push(this.paintMarkedVertice(vertex[0], vertex[1]));
+        } else {
+          _results.push(this.paintProbe(vertex[0], vertex[1]));
+        }
       }
       return _results;
+    };
+
+    Abercrombie.prototype.toggleMarkedVertex = function(vertex) {
+      var key;
+      key = JSON.stringify(vertex);
+      if (!this.markedVertices[key]) {
+        return this.markedVertices[key] = true;
+      } else {
+        return this.markedVertices[key] = false;
+      }
     };
 
     return Abercrombie;

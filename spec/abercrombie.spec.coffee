@@ -27,7 +27,8 @@ describe "Abercrombie", ->
     it "Defines its grid size", ->
         expect(ab.size).toEqual jasmine.any Number
 
-
+    it "Defines its probe size", ->
+        expect(ab.probeSize).toEqual jasmine.any Number
 
     describe ".refresh", ->
 
@@ -44,8 +45,6 @@ describe "Abercrombie", ->
             expect(document.getElementById).toHaveBeenCalledWith "cvTop"
             expect(ab.cvTop).toBe cvTop
             expect(ab.ctx).toBe cvTop.getContext()
-
-
 
     describe ".alignCanvases", ->
 
@@ -67,8 +66,6 @@ describe "Abercrombie", ->
             expect(ab.cvTop.style.left).toEqual cvBase.offsetLeft
             expect(ab.cvTop.style.top).toEqual cvBase.offsetTop
 
-
-
     describe ".paintProbe", ->
 
         beforeEach ->
@@ -82,9 +79,10 @@ describe "Abercrombie", ->
             expect(ab.refresh).toHaveBeenCalled()
 
         it "calls @ctx.strokeRect with the provided x,y and @size", ->
-            expect(ab.ctx.strokeRect).toHaveBeenCalledWith x,y,ab.size,ab.size
+            expect(ab.ctx.strokeRect).toHaveBeenCalledWith x,y,ab.probeSize,ab.probeSize
 
-
+        it "sets the @ctx.strokeStyle to #000000 (black)", ->
+            expect(ab.ctx.strokeStyle).toEqual "#000000"
 
     describe ".placeProbe", ->
 
@@ -122,8 +120,6 @@ describe "Abercrombie", ->
             it "calls paintProbe with the event coordinates", ->
                 expect(ab.paintProbe).toHaveBeenCalledWith x,y
 
-
-
     describe ".getEventCoordinates", ->
 
         it "should pass through x and y if given", ->
@@ -135,8 +131,6 @@ describe "Abercrombie", ->
             [xx,yy] = ab.getEventCoordinates evt
             expect(xx).toEqual evt.clientX - evt.target.offsetLeft + window.pageXOffset
             expect(yy).toEqual evt.clientY - evt.target.offsetTop  + window.pageYOffset
-
-
 
     describe ".paintRow", ->
 
@@ -158,8 +152,6 @@ describe "Abercrombie", ->
         it "returns null", ->
             expect(ab.paintRow(y)).toBeNull()
 
-
-
     describe ".paintGrid", ->
 
         beforeEach ->
@@ -180,13 +172,11 @@ describe "Abercrombie", ->
         it "returns null", ->
             expect(ab.paintGrid()).toBeNull()
 
-
-
     describe ".getNearestVertexToEvent", ->
 
         vertex = null
         eventCoordinates = [123,80]
-        expectedVertext = [100,100]
+        expectedVertex = [100,100]
         event = "my event"
 
         beforeEach ->
@@ -198,9 +188,62 @@ describe "Abercrombie", ->
             expect(ab.getEventCoordinates).toHaveBeenCalledWith event, undefined, undefined
 
         it "returns the nearest vertex coordinates", ->
-            expect(vertex).toEqual expectedVertext
+            expect(vertex).toEqual expectedVertex
 
+    describe ".getProbeVertexOfEvent", ->
+        
+        expectedVertex = [100,100]
+        eventCoordinates = [123,80]
+        event = "my event"
+        vertex = null
+        spy = null
 
+        beforeEach ->
+            spyOn ab, "getNearestVertexToEvent"
+                .and.returnValue expectedVertex
+            spy = spyOn ab, "getEventCoordinates"
+                .and.returnValue eventCoordinates
+
+        beforeEach ->
+            vertex = ab.getProbeVertexOfEvent event
+
+        it "gets the event coordinates", ->
+            expect(ab.getEventCoordinates).toHaveBeenCalledWith event, undefined, undefined
+
+        it "gets the nearest vertex", ->
+            expect(ab.getNearestVertexToEvent).toHaveBeenCalledWith event, undefined, undefined
+
+        describe "for events not in probes", ->
+
+            it "returns null if x < probe.x", ->
+                spy.and.returnValue [99,105]
+                vertex = ab.getProbeVertexOfEvent event
+                expect(vertex).toBeNull()
+
+            it "returns null if y < probe.y", ->
+                spy.and.returnValue [105,95]
+                vertex = ab.getProbeVertexOfEvent event
+                expect(vertex).toBeNull()
+
+            it "returns null if x > probe.x + probeSize", ->
+                spy.and.returnValue [111,105]
+                vertex = ab.getProbeVertexOfEvent event
+                expect(vertex).toBeNull()
+
+            it "returns null if y > probe.y + probeSize", ->
+                spy.and.returnValue [105,115]
+                vertex = ab.getProbeVertexOfEvent event
+                expect(vertex).toBeNull()
+
+        describe "for events in probes", ->
+
+            eventCoordinates = [105,105]
+
+            beforeEach ->
+                spy.and.returnValue [105,105]
+
+            it "returns the nearest vertex of the nearest probe", ->
+                expect(vertex).toEqual expectedVertex
 
     describe ".markVertices", ->
 
@@ -235,25 +278,17 @@ describe "Abercrombie", ->
                 spyOn ab, "getNearestVertexToEvent"
                     .and.returnValue vertex
                 spyOn ab, "repaintMarkedVertices"
+                spyOn ab, "toggleMarkedVertex"
                 ab.cvTop.onclick()
 
             it "gets the nearest vertex", ->
                 expect(ab.getNearestVertexToEvent).toHaveBeenCalled()
 
             it "toggles the nearest vertex into/out of @markedVertices", ->
-                expectedMarkedVertices = {}
-                expectedMarkedVertices[JSON.stringify(vertex)] = true
-
-                #toggled on in beforeEach
-                expect(ab.markedVertices).toEqual expectedMarkedVertices
-
-                #toggle off
-                ab.cvTop.onclick()
-                expect(ab.markedVertices).toEqual {}
+                expect(ab.toggleMarkedVertex).toHaveBeenCalledWith vertex
 
             it "calls repaintMarkedVertices", ->
                 expect(ab.repaintMarkedVertices).toHaveBeenCalled()
-
 
     describe ".paintMarkedVertice", ->
 
@@ -267,21 +302,21 @@ describe "Abercrombie", ->
         it "calls refresh", ->
             expect(ab.refresh).toHaveBeenCalled()
 
-        it "calls @ctx.strokeRect centered on the provided x,y and @size/4", ->
-            expectedSize = ab.size/4
-            expectedx    = x - expectedSize/2
-            expectedy    = y - expectedSize/2
-            expect(ab.ctx.strokeRect).toHaveBeenCalledWith expectedx, expectedy, expectedSize, expectedSize
+        it "calls @ctx.strokeRect at the provided x,y and @size/4", ->
+            expect(ab.ctx.strokeRect).toHaveBeenCalledWith x, y, ab.probeSize, ab.probeSize
 
-
+        it "sets the @ctx.strokeStyle to #ff0000 (red)", ->
+            expect(ab.ctx.strokeStyle).toEqual "#ff0000"
 
     describe ".repaintMarkedVertices", ->
 
-        markedVertices = { "[100,150]": true, "[200,250]": true}
+        markedVertices = { "[100,150]": true, "[200,250]": true, "[100,250]": false}
 
         beforeEach ->
             spyOn ab, "refresh"
             spyOn ab, "paintMarkedVertice"
+            spyOn ab, "paintProbe"
+            spyOn ab, "clearProbe"
             ab.markedVertices = markedVertices
 
         beforeEach ->
@@ -290,8 +325,56 @@ describe "Abercrombie", ->
         it "calls refresh", ->
             expect(ab.refresh).toHaveBeenCalled()
 
-        it "calls paintMarkedVertice with each vertex in @markedVertices", ->
+        it "calls clearProbe with each vertex in @markedVertices", ->
+            expectVertex = (key) ->
+                vertex = JSON.parse key
+                expect(ab.clearProbe).toHaveBeenCalledWith vertex[0], vertex[1]
+            expectVertex key for key in Object.keys(markedVertices)
+            expect(ab.clearProbe.calls.count()).toEqual 3
+
+        it "calls paintMarkedVertice with each vertex marked true in @markedVertices", ->
             expectVertex = (key) ->
                 vertex = JSON.parse key
                 expect(ab.paintMarkedVertice).toHaveBeenCalledWith vertex[0], vertex[1]
-            expectVertex key for key in Object.keys(markedVertices)
+            expectVertex key for key in Object.keys(markedVertices) when markedVertices[key]
+            expect(ab.paintMarkedVertice.calls.count()).toEqual 2
+
+        it "calls paintProbe with each vertex marked false in @markedVertices", ->
+            expectVertex = (key) ->
+                vertex = JSON.parse key
+                expect(ab.paintProbe).toHaveBeenCalledWith vertex[0], vertex[1]
+            expectVertex key for key in Object.keys(markedVertices) when not markedVertices[key]
+            expect(ab.paintProbe.calls.count()).toEqual 1
+
+    describe ".toggleMarkedVertex", ->
+
+        vertex = [100, 150]
+        markedVertices = {}
+
+        beforeEach ->
+            ab.markedVertices = markedVertices
+
+        it "toggles the vertex in markedVertices between true and false", ->
+            ab.toggleMarkedVertex vertex
+            expect(markedVertices).toEqual { "[100,150]": true }
+            ab.toggleMarkedVertex vertex
+            expect(markedVertices).toEqual { "[100,150]": false }
+            ab.toggleMarkedVertex vertex
+            expect(markedVertices).toEqual { "[100,150]": true }
+
+    describe ".clearProbe", ->
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            ab.ctx = jasmine.createSpyObj "ctx", ["clearRect"]
+            ab.ctx.lineWidth = 1
+
+        beforeEach ->
+            ab.clearProbe x,y
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "calls @ctx.clearRect with the provided x,y and @probeSize, padded by lineWidth", ->
+            padding = ab.ctx.lineWidth
+            expect(ab.ctx.clearRect).toHaveBeenCalledWith x-padding,y-padding,ab.probeSize+2*padding,ab.probeSize+2*padding

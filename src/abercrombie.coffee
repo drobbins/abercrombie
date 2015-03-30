@@ -1,8 +1,9 @@
 class Abercrombie
     constructor: ->
-        @id      = "abercrombie"
-        @version = "0.0.1"
-        @size    = 50               # Default px size of grid/probe.
+        @id        = "abercrombie"
+        @version   = "0.0.1"
+        @size      = 50               # Default px size of grid
+        @probeSize = 10             # Default px size of probes
         @Abercrombie = Abercrombie  # Abercrombie-ception
 
     refresh: ->
@@ -14,6 +15,11 @@ class Abercrombie
         cvBase            = document.getElementById("cvBase")
         @cvTop.style.left = cvBase.offsetLeft;
         @cvTop.style.top  = cvBase.offsetTop;
+
+    clearProbe: (x, y) ->
+        @refresh()
+        padding = @ctx.lineWidth
+        @ctx.clearRect x - padding, y - padding, @probeSize + 2*padding, @probeSize + 2*padding
 
     getCanvas: -> document.getElementById("cvTop")
 
@@ -30,6 +36,14 @@ class Abercrombie
         vy = if y - Math.floor(y/@size)*@size > (@size/2) then Math.ceil(y/@size)*@size else Math.floor(y/@size)*@size
         [vx, vy]
 
+    getProbeVertexOfEvent: (evt, xx, yy) ->
+        [ex, ey] = @getEventCoordinates evt, xx, yy
+        [vx, vy] = @getNearestVertexToEvent evt, xx, yy
+        if (vx < ex < vx + @probeSize) and (vy < ey < vy + @probeSize)
+            return [vx, vy]
+        else
+            return null
+
     markVertices: ->
         @refresh()
         @alignCanvases()
@@ -37,15 +51,13 @@ class Abercrombie
         @markedVertices = {}
         @cvTop.onclick = (evt,x,y) =>
             vertex = @getNearestVertexToEvent evt, x, y
-            if @markedVertices[JSON.stringify vertex]
-                delete @markedVertices[JSON.stringify vertex]
-            else
-                @markedVertices[JSON.stringify vertex] = true
+            @toggleMarkedVertex vertex
             @repaintMarkedVertices()
 
     paintProbe: (x,y) ->
         @refresh()
-        @ctx.strokeRect x, y, @size, @size
+        @ctx.strokeStyle = "#000000"
+        @ctx.strokeRect x, y, @probeSize, @probeSize
 
     placeProbe: ->
         @refresh()
@@ -63,8 +75,8 @@ class Abercrombie
 
     paintMarkedVertice: (x, y) ->
         @refresh()
-        size = @size/4
-        @ctx.strokeRect x-size/2, y-size/2, size, size
+        @ctx.strokeStyle = "#ff0000"
+        @ctx.strokeRect x, y, @probeSize, @probeSize
 
     paintRow: (y) ->
         @refresh()
@@ -76,7 +88,15 @@ class Abercrombie
         @refresh()
         for key in Object.keys @markedVertices
             vertex = JSON.parse key
-            @paintMarkedVertice vertex[0], vertex[1]
+            @clearProbe vertex[0], vertex[1]
+            if @markedVertices[key]
+                @paintMarkedVertice vertex[0], vertex[1]
+            else
+                @paintProbe vertex[0], vertex[1]
+
+    toggleMarkedVertex: (vertex) ->
+        key = JSON.stringify vertex
+        if not @markedVertices[key] then @markedVertices[key] = true else @markedVertices[key] = false
 
 # Instantiate Abercrombie
 abercrombie = window.abercrombie = window.ab = new Abercrombie()
