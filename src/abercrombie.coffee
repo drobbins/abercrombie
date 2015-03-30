@@ -16,6 +16,10 @@ class Abercrombie
         @cvTop.style.left = cvBase.offsetLeft;
         @cvTop.style.top  = cvBase.offsetTop;
 
+    clearProbe: (x, y) ->
+        @refresh()
+        @ctx.clearRect x, y, @probeSize, @probeSize
+
     getCanvas: -> document.getElementById("cvTop")
 
     getContext: -> @getCanvas().getContext("2d")
@@ -69,8 +73,8 @@ class Abercrombie
 
     paintMarkedVertice: (x, y) ->
         @refresh()
-        size = @size/4
-        @ctx.strokeRect x-size/2, y-size/2, size, size
+        @ctx.strokeStyle = "#ff0000"
+        @ctx.strokeRect x, y, @probeSize, @probeSize
 
     paintRow: (y) ->
         @refresh()
@@ -82,7 +86,11 @@ class Abercrombie
         @refresh()
         for key in Object.keys @markedVertices
             vertex = JSON.parse key
-            @paintMarkedVertice vertex[0], vertex[1]
+            @clearProbe vertex[0], vertex[1]
+            if @markedVertices[key]
+                @paintMarkedVertice vertex[0], vertex[1]
+            else
+                @paintProbe vertex[0], vertex[1]
 
     toggleMarkedVertex: (vertex) ->
         key = JSON.stringify vertex

@@ -23,6 +23,11 @@
       return this.cvTop.style.top = cvBase.offsetTop;
     };
 
+    Abercrombie.prototype.clearProbe = function(x, y) {
+      this.refresh();
+      return this.ctx.clearRect(x, y, this.probeSize, this.probeSize);
+    };
+
     Abercrombie.prototype.getCanvas = function() {
       return document.getElementById("cvTop");
     };
@@ -103,10 +108,9 @@
     };
 
     Abercrombie.prototype.paintMarkedVertice = function(x, y) {
-      var size;
       this.refresh();
-      size = this.size / 4;
-      return this.ctx.strokeRect(x - size / 2, y - size / 2, size, size);
+      this.ctx.strokeStyle = "#ff0000";
+      return this.ctx.strokeRect(x, y, this.probeSize, this.probeSize);
     };
 
     Abercrombie.prototype.paintRow = function(y) {
@@ -126,7 +130,12 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
         vertex = JSON.parse(key);
-        _results.push(this.paintMarkedVertice(vertex[0], vertex[1]));
+        this.clearProbe(vertex[0], vertex[1]);
+        if (this.markedVertices[key]) {
+          _results.push(this.paintMarkedVertice(vertex[0], vertex[1]));
+        } else {
+          _results.push(this.paintProbe(vertex[0], vertex[1]));
+        }
       }
       return _results;
     };

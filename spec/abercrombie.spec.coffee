@@ -299,19 +299,21 @@ describe "Abercrombie", ->
         it "calls refresh", ->
             expect(ab.refresh).toHaveBeenCalled()
 
-        it "calls @ctx.strokeRect centered on the provided x,y and @size/4", ->
-            expectedSize = ab.size/4
-            expectedx    = x - expectedSize/2
-            expectedy    = y - expectedSize/2
-            expect(ab.ctx.strokeRect).toHaveBeenCalledWith expectedx, expectedy, expectedSize, expectedSize
+        it "calls @ctx.strokeRect at the provided x,y and @size/4", ->
+            expect(ab.ctx.strokeRect).toHaveBeenCalledWith x, y, ab.probeSize, ab.probeSize
+
+        it "sets the @ctx.strokeStyle to #ff0000 (red)", ->
+            expect(ab.ctx.strokeStyle).toEqual "#ff0000"
 
     describe ".repaintMarkedVertices", ->
 
-        markedVertices = { "[100,150]": true, "[200,250]": true}
+        markedVertices = { "[100,150]": true, "[200,250]": true, "[100,250]": false}
 
         beforeEach ->
             spyOn ab, "refresh"
             spyOn ab, "paintMarkedVertice"
+            spyOn ab, "paintProbe"
+            spyOn ab, "clearProbe"
             ab.markedVertices = markedVertices
 
         beforeEach ->
@@ -320,11 +322,26 @@ describe "Abercrombie", ->
         it "calls refresh", ->
             expect(ab.refresh).toHaveBeenCalled()
 
-        it "calls paintMarkedVertice with each vertex in @markedVertices", ->
+        it "calls clearProbe with each vertex in @markedVertices", ->
+            expectVertex = (key) ->
+                vertex = JSON.parse key
+                expect(ab.clearProbe).toHaveBeenCalledWith vertex[0], vertex[1]
+            expectVertex key for key in Object.keys(markedVertices)
+            expect(ab.clearProbe.calls.count()).toEqual 3
+
+        it "calls paintMarkedVertice with each vertex marked true in @markedVertices", ->
             expectVertex = (key) ->
                 vertex = JSON.parse key
                 expect(ab.paintMarkedVertice).toHaveBeenCalledWith vertex[0], vertex[1]
-            expectVertex key for key in Object.keys(markedVertices)
+            expectVertex key for key in Object.keys(markedVertices) when markedVertices[key]
+            expect(ab.paintMarkedVertice.calls.count()).toEqual 2
+
+        it "calls paintProbe with each vertex marked false in @markedVertices", ->
+            expectVertex = (key) ->
+                vertex = JSON.parse key
+                expect(ab.paintProbe).toHaveBeenCalledWith vertex[0], vertex[1]
+            expectVertex key for key in Object.keys(markedVertices) when not markedVertices[key]
+            expect(ab.paintProbe.calls.count()).toEqual 1
 
     describe ".toggleMarkedVertex", ->
 
@@ -341,4 +358,18 @@ describe "Abercrombie", ->
             expect(markedVertices).toEqual { "[100,150]": false }
             ab.toggleMarkedVertex vertex
             expect(markedVertices).toEqual { "[100,150]": true }
-            
+
+    describe ".clearProbe", ->
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            ab.ctx = jasmine.createSpyObj "ctx", ["clearRect"]
+
+        beforeEach ->
+            ab.clearProbe x,y
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "calls @ctx.clearRect with the provided x,y and @probeSize", ->
+            expect(ab.ctx.clearRect).toHaveBeenCalledWith x,y,ab.probeSize,ab.probeSize

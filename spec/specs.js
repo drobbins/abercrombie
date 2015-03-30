@@ -317,23 +317,25 @@
       it("calls refresh", function() {
         return expect(ab.refresh).toHaveBeenCalled();
       });
-      return it("calls @ctx.strokeRect centered on the provided x,y and @size/4", function() {
-        var expectedSize, expectedx, expectedy;
-        expectedSize = ab.size / 4;
-        expectedx = x - expectedSize / 2;
-        expectedy = y - expectedSize / 2;
-        return expect(ab.ctx.strokeRect).toHaveBeenCalledWith(expectedx, expectedy, expectedSize, expectedSize);
+      it("calls @ctx.strokeRect at the provided x,y and @size/4", function() {
+        return expect(ab.ctx.strokeRect).toHaveBeenCalledWith(x, y, ab.probeSize, ab.probeSize);
+      });
+      return it("sets the @ctx.strokeStyle to #ff0000 (red)", function() {
+        return expect(ab.ctx.strokeStyle).toEqual("#ff0000");
       });
     });
     describe(".repaintMarkedVertices", function() {
       var markedVertices;
       markedVertices = {
         "[100,150]": true,
-        "[200,250]": true
+        "[200,250]": true,
+        "[100,250]": false
       };
       beforeEach(function() {
         spyOn(ab, "refresh");
         spyOn(ab, "paintMarkedVertice");
+        spyOn(ab, "paintProbe");
+        spyOn(ab, "clearProbe");
         return ab.markedVertices = markedVertices;
       });
       beforeEach(function() {
@@ -342,23 +344,54 @@
       it("calls refresh", function() {
         return expect(ab.refresh).toHaveBeenCalled();
       });
-      return it("calls paintMarkedVertice with each vertex in @markedVertices", function() {
-        var expectVertex, key, _i, _len, _ref, _results;
+      it("calls clearProbe with each vertex in @markedVertices", function() {
+        var expectVertex, key, _i, _len, _ref;
+        expectVertex = function(key) {
+          var vertex;
+          vertex = JSON.parse(key);
+          return expect(ab.clearProbe).toHaveBeenCalledWith(vertex[0], vertex[1]);
+        };
+        _ref = Object.keys(markedVertices);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          key = _ref[_i];
+          expectVertex(key);
+        }
+        return expect(ab.clearProbe.calls.count()).toEqual(3);
+      });
+      it("calls paintMarkedVertice with each vertex marked true in @markedVertices", function() {
+        var expectVertex, key, _i, _len, _ref;
         expectVertex = function(key) {
           var vertex;
           vertex = JSON.parse(key);
           return expect(ab.paintMarkedVertice).toHaveBeenCalledWith(vertex[0], vertex[1]);
         };
         _ref = Object.keys(markedVertices);
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           key = _ref[_i];
-          _results.push(expectVertex(key));
+          if (markedVertices[key]) {
+            expectVertex(key);
+          }
         }
-        return _results;
+        return expect(ab.paintMarkedVertice.calls.count()).toEqual(2);
+      });
+      return it("calls paintProbe with each vertex marked false in @markedVertices", function() {
+        var expectVertex, key, _i, _len, _ref;
+        expectVertex = function(key) {
+          var vertex;
+          vertex = JSON.parse(key);
+          return expect(ab.paintProbe).toHaveBeenCalledWith(vertex[0], vertex[1]);
+        };
+        _ref = Object.keys(markedVertices);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          key = _ref[_i];
+          if (!markedVertices[key]) {
+            expectVertex(key);
+          }
+        }
+        return expect(ab.paintProbe.calls.count()).toEqual(1);
       });
     });
-    return describe(".toggleMarkedVertex", function() {
+    describe(".toggleMarkedVertex", function() {
       var markedVertices, vertex;
       vertex = [100, 150];
       markedVertices = {};
@@ -378,6 +411,21 @@
         return expect(markedVertices).toEqual({
           "[100,150]": true
         });
+      });
+    });
+    return describe(".clearProbe", function() {
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        return ab.ctx = jasmine.createSpyObj("ctx", ["clearRect"]);
+      });
+      beforeEach(function() {
+        return ab.clearProbe(x, y);
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("calls @ctx.clearRect with the provided x,y and @probeSize", function() {
+        return expect(ab.ctx.clearRect).toHaveBeenCalledWith(x, y, ab.probeSize, ab.probeSize);
       });
     });
   });
