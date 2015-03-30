@@ -237,18 +237,14 @@
         beforeEach(function() {
           spyOn(ab, "getNearestVertexToEvent").and.returnValue(vertex);
           spyOn(ab, "repaintMarkedVertices");
+          spyOn(ab, "toggleMarkedVertex");
           return ab.cvTop.onclick();
         });
         it("gets the nearest vertex", function() {
           return expect(ab.getNearestVertexToEvent).toHaveBeenCalled();
         });
         it("toggles the nearest vertex into/out of @markedVertices", function() {
-          var expectedMarkedVertices;
-          expectedMarkedVertices = {};
-          expectedMarkedVertices[JSON.stringify(vertex)] = true;
-          expect(ab.markedVertices).toEqual(expectedMarkedVertices);
-          ab.cvTop.onclick();
-          return expect(ab.markedVertices).toEqual({});
+          return expect(ab.toggleMarkedVertex).toHaveBeenCalledWith(vertex);
         });
         return it("calls repaintMarkedVertices", function() {
           return expect(ab.repaintMarkedVertices).toHaveBeenCalled();
@@ -274,7 +270,7 @@
         return expect(ab.ctx.strokeRect).toHaveBeenCalledWith(expectedx, expectedy, expectedSize, expectedSize);
       });
     });
-    return describe(".repaintMarkedVertices", function() {
+    describe(".repaintMarkedVertices", function() {
       var markedVertices;
       markedVertices = {
         "[100,150]": true,
@@ -305,6 +301,28 @@
           _results.push(expectVertex(key));
         }
         return _results;
+      });
+    });
+    return describe(".toggleMarkedVertex", function() {
+      var markedVertices, vertex;
+      vertex = [100, 150];
+      markedVertices = {};
+      beforeEach(function() {
+        return ab.markedVertices = markedVertices;
+      });
+      return it("toggles the vertex in markedVertices between true and false", function() {
+        ab.toggleMarkedVertex(vertex);
+        expect(markedVertices).toEqual({
+          "[100,150]": true
+        });
+        ab.toggleMarkedVertex(vertex);
+        expect(markedVertices).toEqual({
+          "[100,150]": false
+        });
+        ab.toggleMarkedVertex(vertex);
+        return expect(markedVertices).toEqual({
+          "[100,150]": true
+        });
       });
     });
   });

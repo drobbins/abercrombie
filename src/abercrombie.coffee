@@ -37,10 +37,7 @@ class Abercrombie
         @markedVertices = {}
         @cvTop.onclick = (evt,x,y) =>
             vertex = @getNearestVertexToEvent evt, x, y
-            if @markedVertices[JSON.stringify vertex]
-                delete @markedVertices[JSON.stringify vertex]
-            else
-                @markedVertices[JSON.stringify vertex] = true
+            @toggleMarkedVertex vertex
             @repaintMarkedVertices()
 
     paintProbe: (x,y) ->
@@ -77,6 +74,10 @@ class Abercrombie
         for key in Object.keys @markedVertices
             vertex = JSON.parse key
             @paintMarkedVertice vertex[0], vertex[1]
+
+    toggleMarkedVertex: (vertex) ->
+        key = JSON.stringify vertex
+        if not @markedVertices[key] then @markedVertices[key] = true else @markedVertices[key] = false
 
 # Instantiate Abercrombie
 abercrombie = window.abercrombie = window.ab = new Abercrombie()

@@ -217,21 +217,14 @@ describe "Abercrombie", ->
                 spyOn ab, "getNearestVertexToEvent"
                     .and.returnValue vertex
                 spyOn ab, "repaintMarkedVertices"
+                spyOn ab, "toggleMarkedVertex"
                 ab.cvTop.onclick()
 
             it "gets the nearest vertex", ->
                 expect(ab.getNearestVertexToEvent).toHaveBeenCalled()
 
             it "toggles the nearest vertex into/out of @markedVertices", ->
-                expectedMarkedVertices = {}
-                expectedMarkedVertices[JSON.stringify(vertex)] = true
-
-                #toggled on in beforeEach
-                expect(ab.markedVertices).toEqual expectedMarkedVertices
-
-                #toggle off
-                ab.cvTop.onclick()
-                expect(ab.markedVertices).toEqual {}
+                expect(ab.toggleMarkedVertex).toHaveBeenCalledWith vertex
 
             it "calls repaintMarkedVertices", ->
                 expect(ab.repaintMarkedVertices).toHaveBeenCalled()
@@ -274,3 +267,20 @@ describe "Abercrombie", ->
                 vertex = JSON.parse key
                 expect(ab.paintMarkedVertice).toHaveBeenCalledWith vertex[0], vertex[1]
             expectVertex key for key in Object.keys(markedVertices)
+
+    describe ".toggleMarkedVertex", ->
+
+        vertex = [100, 150]
+        markedVertices = {}
+
+        beforeEach ->
+            ab.markedVertices = markedVertices
+
+        it "toggles the vertex in markedVertices between true and false", ->
+            ab.toggleMarkedVertex vertex
+            expect(markedVertices).toEqual { "[100,150]": true }
+            ab.toggleMarkedVertex vertex
+            expect(markedVertices).toEqual { "[100,150]": false }
+            ab.toggleMarkedVertex vertex
+            expect(markedVertices).toEqual { "[100,150]": true }
+            

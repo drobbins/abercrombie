@@ -57,11 +57,7 @@
         return function(evt, x, y) {
           var vertex;
           vertex = _this.getNearestVertexToEvent(evt, x, y);
-          if (_this.markedVertices[JSON.stringify(vertex)]) {
-            delete _this.markedVertices[JSON.stringify(vertex)];
-          } else {
-            _this.markedVertices[JSON.stringify(vertex)] = true;
-          }
+          _this.toggleMarkedVertex(vertex);
           return _this.repaintMarkedVertices();
         };
       })(this);
@@ -121,6 +117,16 @@
         _results.push(this.paintMarkedVertice(vertex[0], vertex[1]));
       }
       return _results;
+    };
+
+    Abercrombie.prototype.toggleMarkedVertex = function(vertex) {
+      var key;
+      key = JSON.stringify(vertex);
+      if (!this.markedVertices[key]) {
+        return this.markedVertices[key] = true;
+      } else {
+        return this.markedVertices[key] = false;
+      }
     };
 
     return Abercrombie;
