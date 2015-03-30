@@ -84,8 +84,11 @@
       it("calls refresh", function() {
         return expect(ab.refresh).toHaveBeenCalled();
       });
-      return it("calls @ctx.strokeRect with the provided x,y and @size", function() {
+      it("calls @ctx.strokeRect with the provided x,y and @size", function() {
         return expect(ab.ctx.strokeRect).toHaveBeenCalledWith(x, y, ab.probeSize, ab.probeSize);
+      });
+      return it("sets the @ctx.strokeStyle to #000000 (black)", function() {
+        return expect(ab.ctx.strokeStyle).toEqual("#000000");
       });
     });
     describe(".placeProbe", function() {
@@ -416,7 +419,8 @@
     return describe(".clearProbe", function() {
       beforeEach(function() {
         spyOn(ab, "refresh");
-        return ab.ctx = jasmine.createSpyObj("ctx", ["clearRect"]);
+        ab.ctx = jasmine.createSpyObj("ctx", ["clearRect"]);
+        return ab.ctx.lineWidth = 1;
       });
       beforeEach(function() {
         return ab.clearProbe(x, y);
@@ -424,8 +428,10 @@
       it("calls refresh", function() {
         return expect(ab.refresh).toHaveBeenCalled();
       });
-      return it("calls @ctx.clearRect with the provided x,y and @probeSize", function() {
-        return expect(ab.ctx.clearRect).toHaveBeenCalledWith(x, y, ab.probeSize, ab.probeSize);
+      return it("calls @ctx.clearRect with the provided x,y and @probeSize, padded by lineWidth", function() {
+        var padding;
+        padding = ab.ctx.lineWidth;
+        return expect(ab.ctx.clearRect).toHaveBeenCalledWith(x - padding, y - padding, ab.probeSize + 2 * padding, ab.probeSize + 2 * padding);
       });
     });
   });

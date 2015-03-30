@@ -81,6 +81,9 @@ describe "Abercrombie", ->
         it "calls @ctx.strokeRect with the provided x,y and @size", ->
             expect(ab.ctx.strokeRect).toHaveBeenCalledWith x,y,ab.probeSize,ab.probeSize
 
+        it "sets the @ctx.strokeStyle to #000000 (black)", ->
+            expect(ab.ctx.strokeStyle).toEqual "#000000"
+
     describe ".placeProbe", ->
 
         beforeEach ->
@@ -364,6 +367,7 @@ describe "Abercrombie", ->
         beforeEach ->
             spyOn ab, "refresh"
             ab.ctx = jasmine.createSpyObj "ctx", ["clearRect"]
+            ab.ctx.lineWidth = 1
 
         beforeEach ->
             ab.clearProbe x,y
@@ -371,5 +375,6 @@ describe "Abercrombie", ->
         it "calls refresh", ->
             expect(ab.refresh).toHaveBeenCalled()
 
-        it "calls @ctx.clearRect with the provided x,y and @probeSize", ->
-            expect(ab.ctx.clearRect).toHaveBeenCalledWith x,y,ab.probeSize,ab.probeSize
+        it "calls @ctx.clearRect with the provided x,y and @probeSize, padded by lineWidth", ->
+            padding = ab.ctx.lineWidth
+            expect(ab.ctx.clearRect).toHaveBeenCalledWith x-padding,y-padding,ab.probeSize+2*padding,ab.probeSize+2*padding

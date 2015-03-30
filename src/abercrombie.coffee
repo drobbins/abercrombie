@@ -18,7 +18,8 @@ class Abercrombie
 
     clearProbe: (x, y) ->
         @refresh()
-        @ctx.clearRect x, y, @probeSize, @probeSize
+        padding = @ctx.lineWidth
+        @ctx.clearRect x - padding, y - padding, @probeSize + 2*padding, @probeSize + 2*padding
 
     getCanvas: -> document.getElementById("cvTop")
 
@@ -55,6 +56,7 @@ class Abercrombie
 
     paintProbe: (x,y) ->
         @refresh()
+        @ctx.strokeStyle = "#000000"
         @ctx.strokeRect x, y, @probeSize, @probeSize
 
     placeProbe: ->

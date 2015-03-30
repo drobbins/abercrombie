@@ -24,8 +24,10 @@
     };
 
     Abercrombie.prototype.clearProbe = function(x, y) {
+      var padding;
       this.refresh();
-      return this.ctx.clearRect(x, y, this.probeSize, this.probeSize);
+      padding = this.ctx.lineWidth;
+      return this.ctx.clearRect(x - padding, y - padding, this.probeSize + 2 * padding, this.probeSize + 2 * padding);
     };
 
     Abercrombie.prototype.getCanvas = function() {
@@ -82,6 +84,7 @@
 
     Abercrombie.prototype.paintProbe = function(x, y) {
       this.refresh();
+      this.ctx.strokeStyle = "#000000";
       return this.ctx.strokeRect(x, y, this.probeSize, this.probeSize);
     };
 
