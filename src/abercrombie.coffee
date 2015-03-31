@@ -21,6 +21,14 @@ class Abercrombie
         padding = @ctx.lineWidth
         @ctx.clearRect x - padding, y - padding, @probeSize + 2*padding, @probeSize + 2*padding
 
+    countProbes: ->
+        @refresh()
+        numberOfProbes = Math.ceil(@cvTop.width/@size) * Math.ceil(@cvTop.height/@size)
+
+    countMarkedProbes: ->
+        @refresh()
+        numberOfMarkedProbes = (Object.keys(@markedVertices).filter (key) => @markedVertices[key]).length
+
     getCanvas: -> document.getElementById("cvTop")
 
     getContext: -> @getCanvas().getContext("2d")
@@ -53,6 +61,7 @@ class Abercrombie
             vertex = @getNearestVertexToEvent evt, x, y
             @toggleMarkedVertex vertex
             @repaintMarkedVertices()
+            @ui.updateCount()
 
     paintProbe: (x,y) ->
         @refresh()
@@ -98,6 +107,18 @@ class Abercrombie
         key = JSON.stringify vertex
         if not @markedVertices[key] then @markedVertices[key] = true else @markedVertices[key] = false
 
+    ui:
+        start: ->
+            @msg = document.getElementById "msg"
+            @msg.innerText = "Click probes to toggle selection"
+            @countFragment = document.createElement "span"
+            @msg.appendChild @countFragment
+        updateCount: ->
+            numberOfProbes = abercrombie.countProbes()
+            numberOfMarkedProbes = abercrombie.countMarkedProbes()
+            percentMarked = (numberOfMarkedProbes/numberOfProbes * 100).toPrecision 4
+            @countFragment.innerText = "-#{numberOfMarkedProbes} of #{numberOfProbes} marked (#{percentMarked}%)"
+
 # Instantiate Abercrombie
 abercrombie = window.abercrombie = window.ab = new Abercrombie()
 
@@ -113,8 +134,11 @@ if imagejs?
     name = "Abercrombie (#{abercrombie.version})"
     menu =
         "Clear": -> abercrombie.getContext().clearRect 0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height
-        "Place Probe": -> abercrombie.placeProbe()
         "Show Grid": -> abercrombie.paintGrid()
         "Mark Vertices": -> abercrombie.markVertices()
+        "Start": ->
+            abercrombie.ui.start()
+            abercrombie.paintGrid()
+            abercrombie.markVertices()
         
     document.getElementById("menu")?.appendChild? imagejs.menu menu, name

@@ -30,6 +30,22 @@
       return this.ctx.clearRect(x - padding, y - padding, this.probeSize + 2 * padding, this.probeSize + 2 * padding);
     };
 
+    Abercrombie.prototype.countProbes = function() {
+      var numberOfProbes;
+      this.refresh();
+      return numberOfProbes = Math.ceil(this.cvTop.width / this.size) * Math.ceil(this.cvTop.height / this.size);
+    };
+
+    Abercrombie.prototype.countMarkedProbes = function() {
+      var numberOfMarkedProbes;
+      this.refresh();
+      return numberOfMarkedProbes = (Object.keys(this.markedVertices).filter((function(_this) {
+        return function(key) {
+          return _this.markedVertices[key];
+        };
+      })(this))).length;
+    };
+
     Abercrombie.prototype.getCanvas = function() {
       return document.getElementById("cvTop");
     };
@@ -77,7 +93,8 @@
           var vertex;
           vertex = _this.getNearestVertexToEvent(evt, x, y);
           _this.toggleMarkedVertex(vertex);
-          return _this.repaintMarkedVertices();
+          _this.repaintMarkedVertices();
+          return _this.ui.updateCount();
         };
       })(this);
     };
@@ -153,6 +170,22 @@
       }
     };
 
+    Abercrombie.prototype.ui = {
+      start: function() {
+        this.msg = document.getElementById("msg");
+        this.msg.innerText = "Click probes to toggle selection";
+        this.countFragment = document.createElement("span");
+        return this.msg.appendChild(this.countFragment);
+      },
+      updateCount: function() {
+        var numberOfMarkedProbes, numberOfProbes, percentMarked;
+        numberOfProbes = abercrombie.countProbes();
+        numberOfMarkedProbes = abercrombie.countMarkedProbes();
+        percentMarked = (numberOfMarkedProbes / numberOfProbes * 100).toPrecision(4);
+        return this.countFragment.innerText = "-" + numberOfMarkedProbes + " of " + numberOfProbes + " marked (" + percentMarked + "%)";
+      }
+    };
+
     return Abercrombie;
 
   })();
@@ -167,13 +200,15 @@
       "Clear": function() {
         return abercrombie.getContext().clearRect(0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height);
       },
-      "Place Probe": function() {
-        return abercrombie.placeProbe();
-      },
       "Show Grid": function() {
         return abercrombie.paintGrid();
       },
       "Mark Vertices": function() {
+        return abercrombie.markVertices();
+      },
+      "Start": function() {
+        abercrombie.ui.start();
+        abercrombie.paintGrid();
         return abercrombie.markVertices();
       }
     };
