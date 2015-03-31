@@ -296,6 +296,7 @@
           spyOn(ab, "getNearestVertexToEvent").and.returnValue(vertex);
           spyOn(ab, "repaintMarkedVertices");
           spyOn(ab, "toggleMarkedVertex");
+          ab.ui = jasmine.createSpyObj("ui", ["updateCount"]);
           return ab.cvTop.onclick();
         });
         it("gets the nearest vertex", function() {
@@ -416,7 +417,7 @@
         });
       });
     });
-    return describe(".clearProbe", function() {
+    describe(".clearProbe", function() {
       beforeEach(function() {
         spyOn(ab, "refresh");
         ab.ctx = jasmine.createSpyObj("ctx", ["clearRect"]);
@@ -432,6 +433,48 @@
         var padding;
         padding = ab.ctx.lineWidth;
         return expect(ab.ctx.clearRect).toHaveBeenCalledWith(x - padding, y - padding, ab.probeSize + 2 * padding, ab.probeSize + 2 * padding);
+      });
+    });
+    describe(".countProbes", function() {
+      var result;
+      result = null;
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        return ab.cvTop = {
+          height: 1207,
+          width: 1023
+        };
+      });
+      beforeEach(function() {
+        return result = ab.countProbes();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("returns the integer number of probes, calculated from height, width, and size", function() {
+        return expect(result).toEqual(525);
+      });
+    });
+    return describe(".countMarkedProbes", function() {
+      var markedVertices, result;
+      result = null;
+      markedVertices = {
+        "[100,150]": true,
+        "[200,250]": true,
+        "[100,250]": false
+      };
+      beforeEach(function() {
+        spyOn(ab, "refresh");
+        return ab.markedVertices = markedVertices;
+      });
+      beforeEach(function() {
+        return result = ab.countMarkedProbes();
+      });
+      it("calls refresh", function() {
+        return expect(ab.refresh).toHaveBeenCalled();
+      });
+      return it("returns the number of marked probes.", function() {
+        return expect(result).toEqual(2);
       });
     });
   });

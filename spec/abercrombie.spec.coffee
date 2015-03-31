@@ -279,6 +279,7 @@ describe "Abercrombie", ->
                     .and.returnValue vertex
                 spyOn ab, "repaintMarkedVertices"
                 spyOn ab, "toggleMarkedVertex"
+                ab.ui = jasmine.createSpyObj "ui", ["updateCount"]
                 ab.cvTop.onclick()
 
             it "gets the nearest vertex", ->
@@ -378,3 +379,38 @@ describe "Abercrombie", ->
         it "calls @ctx.clearRect with the provided x,y and @probeSize, padded by lineWidth", ->
             padding = ab.ctx.lineWidth
             expect(ab.ctx.clearRect).toHaveBeenCalledWith x-padding,y-padding,ab.probeSize+2*padding,ab.probeSize+2*padding
+
+    describe ".countProbes", ->
+
+        result = null
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            ab.cvTop = height: 1207, width:  1023
+
+        beforeEach ->
+            result = ab.countProbes()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "returns the integer number of probes, calculated from height, width, and size", ->
+            expect(result).toEqual 525
+
+    describe ".countMarkedProbes", ->
+
+        result = null
+        markedVertices = { "[100,150]": true, "[200,250]": true, "[100,250]": false}
+
+        beforeEach ->
+            spyOn ab, "refresh"
+            ab.markedVertices = markedVertices
+
+        beforeEach ->
+            result = ab.countMarkedProbes()
+
+        it "calls refresh", ->
+            expect(ab.refresh).toHaveBeenCalled()
+
+        it "returns the number of marked probes.", ->
+            expect(result).toEqual 2
