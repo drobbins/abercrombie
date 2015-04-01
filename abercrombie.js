@@ -23,6 +23,10 @@
       return this.cvTop.style.top = cvBase.offsetTop;
     };
 
+    Abercrombie.prototype.clear = function() {
+      return this.getContext().clearRect(0, 0, this.getCanvas().width, this.getCanvas().height);
+    };
+
     Abercrombie.prototype.clearProbe = function(x, y) {
       var padding;
       this.refresh();
@@ -173,16 +177,39 @@
     Abercrombie.prototype.ui = {
       start: function() {
         this.msg = document.getElementById("msg");
-        this.msg.innerText = "Click probes to toggle selection";
+        this.msg.innerText = "Click probes to toggle selection. ";
         this.countFragment = document.createElement("span");
-        return this.msg.appendChild(this.countFragment);
+        this.formFragment = this.buildFormFragment();
+        this.msg.appendChild(this.formFragment);
+        this.msg.appendChild(this.countFragment);
+        return document.querySelector("#sizeForm").onchange = (function(_this) {
+          return function() {
+            return _this.updateGrid();
+          };
+        })(this);
       },
       updateCount: function() {
         var numberOfMarkedProbes, numberOfProbes, percentMarked;
         numberOfProbes = abercrombie.countProbes();
         numberOfMarkedProbes = abercrombie.countMarkedProbes();
         percentMarked = (numberOfMarkedProbes / numberOfProbes * 100).toPrecision(4);
-        return this.countFragment.innerText = "-" + numberOfMarkedProbes + " of " + numberOfProbes + " marked (" + percentMarked + "%)";
+        return this.countFragment.innerText = "" + numberOfMarkedProbes + " of " + numberOfProbes + " probes marked (" + percentMarked + "%).";
+      },
+      buildFormFragment: function() {
+        var fragment;
+        fragment = document.createElement("form");
+        fragment.id = "sizeForm";
+        fragment.style.display = "inline";
+        fragment.innerHTML = "<label for=\"size\">Grid Size:<input name=\"size\" size=\"1\" value=\"" + abercrombie.size + "\"/></label> <label for=\"probeSize\">Probe Size:<input name=\"probeSize\" size=\"1\" value=\"" + abercrombie.probeSize + "\"/></label> <span> </span>";
+        return fragment;
+      },
+      updateGrid: function() {
+        abercrombie.markedVertices = {};
+        abercrombie.clear();
+        abercrombie.size = parseInt(document.querySelector("[name=\"size\"]").value, 10);
+        abercrombie.probeSize = parseInt(document.querySelector("[name=\"probeSize\"]").value, 10);
+        abercrombie.paintGrid();
+        return abercrombie.markVertices();
       }
     };
 
@@ -198,7 +225,7 @@
     name = "Abercrombie (" + abercrombie.version + ")";
     menu = {
       "Clear": function() {
-        return abercrombie.getContext().clearRect(0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height);
+        return abercrombie.clear();
       },
       "Show Grid": function() {
         return abercrombie.paintGrid();

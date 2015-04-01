@@ -455,7 +455,7 @@
         return expect(result).toEqual(525);
       });
     });
-    return describe(".countMarkedProbes", function() {
+    describe(".countMarkedProbes", function() {
       var markedVertices, result;
       result = null;
       markedVertices = {
@@ -475,6 +475,31 @@
       });
       return it("returns the number of marked probes.", function() {
         return expect(result).toEqual(2);
+      });
+    });
+    return describe(".clear", function() {
+      var canvas, ctx;
+      ctx = canvas = null;
+      beforeEach(function() {
+        ctx = jasmine.createSpyObj("ctx", ['clearRect']);
+        canvas = {
+          width: 100,
+          height: 150
+        };
+        spyOn(ab, "getContext").and.returnValue(ctx);
+        return spyOn(ab, "getCanvas").and.returnValue(canvas);
+      });
+      beforeEach(function() {
+        return ab.clear();
+      });
+      it("gets the context", function() {
+        return expect(ab.getContext).toHaveBeenCalled();
+      });
+      it("gets the canvas", function() {
+        return expect(ab.getCanvas).toHaveBeenCalled();
+      });
+      return it("calls clearRect on context for the entire canvas", function() {
+        return expect(ctx.clearRect).toHaveBeenCalledWith(0, 0, canvas.width, canvas.height);
       });
     });
   });

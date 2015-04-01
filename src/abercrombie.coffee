@@ -16,6 +16,9 @@ class Abercrombie
         @cvTop.style.left = cvBase.offsetLeft;
         @cvTop.style.top  = cvBase.offsetTop;
 
+    clear: ->
+        @getContext().clearRect 0, 0, @getCanvas().width, @getCanvas().height
+
     clearProbe: (x, y) ->
         @refresh()
         padding = @ctx.lineWidth
@@ -110,14 +113,33 @@ class Abercrombie
     ui:
         start: ->
             @msg = document.getElementById "msg"
-            @msg.innerText = "Click probes to toggle selection"
+            @msg.innerText = "Click probes to toggle selection. "
             @countFragment = document.createElement "span"
+            @formFragment = @buildFormFragment()
+            @msg.appendChild @formFragment
             @msg.appendChild @countFragment
+            document.querySelector("#sizeForm").onchange = => @updateGrid()
         updateCount: ->
             numberOfProbes = abercrombie.countProbes()
             numberOfMarkedProbes = abercrombie.countMarkedProbes()
             percentMarked = (numberOfMarkedProbes/numberOfProbes * 100).toPrecision 4
-            @countFragment.innerText = "-#{numberOfMarkedProbes} of #{numberOfProbes} marked (#{percentMarked}%)"
+            @countFragment.innerText = "#{numberOfMarkedProbes} of #{numberOfProbes} probes marked (#{percentMarked}%)."
+        buildFormFragment: ->
+            fragment = document.createElement "form"
+            fragment.id = "sizeForm"
+            fragment.style.display = "inline"
+            fragment.innerHTML = "
+                <label for=\"size\">Grid Size:<input name=\"size\" size=\"1\" value=\"#{abercrombie.size}\"/></label>
+                <label for=\"probeSize\">Probe Size:<input name=\"probeSize\" size=\"1\" value=\"#{abercrombie.probeSize}\"/></label>
+                <span> </span>"
+            return fragment
+        updateGrid: ->
+            abercrombie.markedVertices = {}
+            abercrombie.clear()
+            abercrombie.size = parseInt document.querySelector("[name=\"size\"]").value, 10
+            abercrombie.probeSize = parseInt document.querySelector("[name=\"probeSize\"]").value, 10
+            abercrombie.paintGrid()
+            abercrombie.markVertices()
 
 # Instantiate Abercrombie
 abercrombie = window.abercrombie = window.ab = new Abercrombie()
@@ -133,7 +155,7 @@ if imagejs?
     # Create the Menu
     name = "Abercrombie (#{abercrombie.version})"
     menu =
-        "Clear": -> abercrombie.getContext().clearRect 0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height
+        "Clear": -> abercrombie.clear()
         "Show Grid": -> abercrombie.paintGrid()
         "Mark Vertices": -> abercrombie.markVertices()
         "Start": ->

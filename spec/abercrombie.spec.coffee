@@ -414,3 +414,27 @@ describe "Abercrombie", ->
 
         it "returns the number of marked probes.", ->
             expect(result).toEqual 2
+
+    describe ".clear", ->
+
+        ctx = canvas = null
+
+        beforeEach ->
+            ctx = jasmine.createSpyObj "ctx", ['clearRect']
+            canvas = width: 100, height: 150
+            spyOn ab, "getContext"
+                .and.returnValue ctx
+            spyOn ab, "getCanvas"
+                .and.returnValue canvas
+
+        beforeEach ->
+            ab.clear()
+
+        it "gets the context", ->
+            expect(ab.getContext).toHaveBeenCalled()
+
+        it "gets the canvas", ->
+            expect(ab.getCanvas).toHaveBeenCalled()
+
+        it "calls clearRect on context for the entire canvas", ->
+            expect(ctx.clearRect).toHaveBeenCalledWith 0, 0, canvas.width, canvas.height
