@@ -267,6 +267,12 @@ describe "Abercrombie", ->
         it "listens at onclick on cvTop", ->
             expect(ab.cvTop.onclick).toEqual jasmine.any Function
 
+        it "listens at mousedown on cvTop", ->
+            expect(ab.cvTop.onmousedown).toEqual jasmine.any Function
+
+        it "listens at mouseup on cvTop", ->
+            expect(ab.cvTop.onmouseup).toEqual jasmine.any Function
+
         it "creates an empty object @markedVertices", ->
             expect(ab.markedVertices).toEqual jasmine.any Object
 
@@ -279,6 +285,7 @@ describe "Abercrombie", ->
                     .and.returnValue vertex
                 spyOn ab, "repaintMarkedVertices"
                 spyOn ab, "toggleMarkedVertex"
+                spyOn ab.ui, "updateCount"
                 ab.ui = jasmine.createSpyObj "ui", ["updateCount"]
                 ab.cvTop.onclick()
 
@@ -290,6 +297,73 @@ describe "Abercrombie", ->
 
             it "calls repaintMarkedVertices", ->
                 expect(ab.repaintMarkedVertices).toHaveBeenCalled()
+
+            it "calls ui.updateCount", ->
+                expect(ab.ui.updateCount).toHaveBeenCalled()
+
+            it "does nothing if @start and @end are not the same", ->
+                ab.start = vertex
+                ab.end = [vertex[0]+50, vertex[1]+50]
+                ab.cvTop.onclick()
+                # Each below was called once for the ab.cvTop.onclick() in the beforeEach,
+                # but not for the call in this test.
+                expect(ab.getNearestVertexToEvent.calls.count()).toEqual 1
+                expect(ab.toggleMarkedVertex.calls.count()).toEqual 1
+                expect(ab.repaintMarkedVertices.calls.count()).toEqual 1
+                expect(ab.ui.updateCount.calls.count()).toEqual 1
+
+        describe "mousedown listener", ->
+
+            beforeEach ->
+                spyOn ab, "getEventCoordinates"
+                    .and.returnValue [x, y]
+                ab.cvTop.onmousedown evt
+
+            it "gets the event coordinates", ->
+                expect(ab.getEventCoordinates).toHaveBeenCalledWith evt, undefined, undefined
+
+            it "sets @start to the event coordinates", ->
+                expect(ab.start).toEqual [x,y]
+
+        describe "mouseup listener", ->
+
+            point1 = [10,10]
+            point2 = null
+            initialMarkedVertices =
+                "[100,50]": true  # Marked point inside range
+                "[50,100]": false # Unmarked point inside range
+                "[200,250]": true # Point outside the range
+            expectedMarkedVertices =
+                "[50,50]": true
+                "[100,50]": true
+                "[50,100]": true
+                "[100,100]": true
+                "[200,250]": true
+
+            beforeEach ->
+                point2 = [ab.size * 2 + 10, ab.size * 2 + 10]
+                spyOn ab, "getEventCoordinates"
+                    .and.returnValue point2
+                spyOn ab, "repaintMarkedVertices"
+                spyOn ab.ui, "updateCount"
+                ab.start = point1
+                ab.markedVertices = initialMarkedVertices
+                ab.cvTop.onmouseup evt
+
+            it "gets the event coordinates", ->
+                expect(ab.getEventCoordinates).toHaveBeenCalledWith evt, undefined, undefined
+
+            it "sets @end to the event coordinates", ->
+                expect(ab.end).toEqual point2
+
+            it "puts any vertices within the selected area into @markedVertices", ->
+                expect(ab.markedVertices).toEqual expectedMarkedVertices
+
+            it "calls repaintMarkedVertices", ->
+                expect(ab.repaintMarkedVertices).toHaveBeenCalled()
+
+            it "calls ui.updateCount", ->
+                expect(ab.ui.updateCount).toHaveBeenCalled()
 
     describe ".paintMarkedVertice", ->
 
@@ -414,3 +488,27 @@ describe "Abercrombie", ->
 
         it "returns the number of marked probes.", ->
             expect(result).toEqual 2
+
+    describe ".clear", ->
+
+        ctx = canvas = null
+
+        beforeEach ->
+            ctx = jasmine.createSpyObj "ctx", ['clearRect']
+            canvas = width: 100, height: 150
+            spyOn ab, "getContext"
+                .and.returnValue ctx
+            spyOn ab, "getCanvas"
+                .and.returnValue canvas
+
+        beforeEach ->
+            ab.clear()
+
+        it "gets the context", ->
+            expect(ab.getContext).toHaveBeenCalled()
+
+        it "gets the canvas", ->
+            expect(ab.getCanvas).toHaveBeenCalled()
+
+        it "calls clearRect on context for the entire canvas", ->
+            expect(ctx.clearRect).toHaveBeenCalledWith 0, 0, canvas.width, canvas.height

@@ -23,6 +23,10 @@
       return this.cvTop.style.top = cvBase.offsetTop;
     };
 
+    Abercrombie.prototype.clear = function() {
+      return this.getContext().clearRect(0, 0, this.getCanvas().width, this.getCanvas().height);
+    };
+
     Abercrombie.prototype.clearProbe = function(x, y) {
       var padding;
       this.refresh();
@@ -88,11 +92,61 @@
       this.alignCanvases();
       this.cvTop.style.cursor = "crosshair";
       this.markedVertices = {};
-      return this.cvTop.onclick = (function(_this) {
+      this.cvTop.onclick = (function(_this) {
         return function(evt, x, y) {
-          var vertex;
+          var vertex, _ref, _ref1, _ref2, _ref3;
+          if (((_ref = _this.start) != null ? _ref[0] : void 0) !== ((_ref1 = _this.end) != null ? _ref1[0] : void 0) || ((_ref2 = _this.start) != null ? _ref2[1] : void 0) !== ((_ref3 = _this.end) != null ? _ref3[1] : void 0)) {
+            return;
+          }
           vertex = _this.getNearestVertexToEvent(evt, x, y);
           _this.toggleMarkedVertex(vertex);
+          _this.repaintMarkedVertices();
+          return _this.ui.updateCount();
+        };
+      })(this);
+      this.cvTop.onmousedown = (function(_this) {
+        return function(evt, x, y) {
+          return _this.start = _this.getEventCoordinates(evt, x, y);
+        };
+      })(this);
+      return this.cvTop.onmouseup = (function(_this) {
+        return function(evt, x, y) {
+          var boundedVertices, vertex, vx, vy, x1, x2, xs, y1, y2, ys, _i, _j, _k, _len, _len1, _len2;
+          _this.end = _this.getEventCoordinates(evt, x, y);
+          x1 = Math.min(_this.start[0], _this.end[0]);
+          x2 = Math.max(_this.start[0], _this.end[0]);
+          y1 = Math.min(_this.start[1], _this.end[1]);
+          y2 = Math.max(_this.start[1], _this.end[1]);
+          vx = Math.ceil(x1 / _this.size) * _this.size;
+          vy = Math.ceil(y1 / _this.size) * _this.size;
+          xs = (function() {
+            var _i, _ref, _results;
+            _results = [];
+            for (x = _i = vx, _ref = this.size; _ref > 0 ? _i <= x2 : _i >= x2; x = _i += _ref) {
+              _results.push(x);
+            }
+            return _results;
+          }).call(_this);
+          ys = (function() {
+            var _i, _ref, _results;
+            _results = [];
+            for (y = _i = vy, _ref = this.size; _ref > 0 ? _i <= y2 : _i >= y2; y = _i += _ref) {
+              _results.push(y);
+            }
+            return _results;
+          }).call(_this);
+          boundedVertices = [];
+          for (_i = 0, _len = xs.length; _i < _len; _i++) {
+            x = xs[_i];
+            for (_j = 0, _len1 = ys.length; _j < _len1; _j++) {
+              y = ys[_j];
+              boundedVertices.push([x, y]);
+            }
+          }
+          for (_k = 0, _len2 = boundedVertices.length; _k < _len2; _k++) {
+            vertex = boundedVertices[_k];
+            _this.markedVertices[JSON.stringify(vertex)] = true;
+          }
           _this.repaintMarkedVertices();
           return _this.ui.updateCount();
         };
@@ -173,16 +227,39 @@
     Abercrombie.prototype.ui = {
       start: function() {
         this.msg = document.getElementById("msg");
-        this.msg.innerText = "Click probes to toggle selection";
+        this.msg.innerText = "Click probes to toggle selection. ";
         this.countFragment = document.createElement("span");
-        return this.msg.appendChild(this.countFragment);
+        this.formFragment = this.buildFormFragment();
+        this.msg.appendChild(this.formFragment);
+        this.msg.appendChild(this.countFragment);
+        return document.querySelector("#sizeForm").onchange = (function(_this) {
+          return function() {
+            return _this.updateGrid();
+          };
+        })(this);
       },
       updateCount: function() {
         var numberOfMarkedProbes, numberOfProbes, percentMarked;
         numberOfProbes = abercrombie.countProbes();
         numberOfMarkedProbes = abercrombie.countMarkedProbes();
         percentMarked = (numberOfMarkedProbes / numberOfProbes * 100).toPrecision(4);
-        return this.countFragment.innerText = "-" + numberOfMarkedProbes + " of " + numberOfProbes + " marked (" + percentMarked + "%)";
+        return this.countFragment.innerText = "" + numberOfMarkedProbes + " of " + numberOfProbes + " probes marked (" + percentMarked + "%).";
+      },
+      buildFormFragment: function() {
+        var fragment;
+        fragment = document.createElement("form");
+        fragment.id = "sizeForm";
+        fragment.style.display = "inline";
+        fragment.innerHTML = "<label for=\"size\">Grid Size:<input name=\"size\" size=\"1\" value=\"" + abercrombie.size + "\"/></label> <label for=\"probeSize\">Probe Size:<input name=\"probeSize\" size=\"1\" value=\"" + abercrombie.probeSize + "\"/></label> <span> </span>";
+        return fragment;
+      },
+      updateGrid: function() {
+        abercrombie.markedVertices = {};
+        abercrombie.clear();
+        abercrombie.size = parseInt(document.querySelector("[name=\"size\"]").value, 10);
+        abercrombie.probeSize = parseInt(document.querySelector("[name=\"probeSize\"]").value, 10);
+        abercrombie.paintGrid();
+        return abercrombie.markVertices();
       }
     };
 
@@ -198,7 +275,7 @@
     name = "Abercrombie (" + abercrombie.version + ")";
     menu = {
       "Clear": function() {
-        return abercrombie.getContext().clearRect(0, 0, abercrombie.getCanvas().width, abercrombie.getCanvas().height);
+        return abercrombie.clear();
       },
       "Show Grid": function() {
         return abercrombie.paintGrid();
