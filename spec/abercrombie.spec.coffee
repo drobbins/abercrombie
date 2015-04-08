@@ -330,14 +330,14 @@ describe "Abercrombie", ->
             point1 = [10,10]
             point2 = null
             initialMarkedVertices =
-                "[100,50]": true  # Marked point inside range
-                "[50,100]": false # Unmarked point inside range
+                "[100,200]": true  # Marked point inside range
+                "[200,100]": false # Unmarked point inside range
                 "[200,250]": true # Point outside the range
             expectedMarkedVertices =
-                "[50,50]": true
-                "[100,50]": true
-                "[50,100]": true
                 "[100,100]": true
+                "[100,200]": true
+                "[200,100]": true
+                "[200,200]": true
                 "[200,250]": true
 
             beforeEach ->
@@ -469,7 +469,7 @@ describe "Abercrombie", ->
             expect(ab.refresh).toHaveBeenCalled()
 
         it "returns the integer number of probes, calculated from height, width, and size", ->
-            expect(result).toEqual 525
+            expect(result).toEqual 143
 
     describe ".countMarkedProbes", ->
 
