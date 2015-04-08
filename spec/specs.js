@@ -286,10 +286,13 @@
       it("listens at onclick on cvTop", function() {
         return expect(ab.cvTop.onclick).toEqual(jasmine.any(Function));
       });
+      it("listens at mousedown on cvTop", function() {
+        return expect(ab.cvTop.mousedown).toEqual(jasmine.any(Function));
+      });
       it("creates an empty object @markedVertices", function() {
         return expect(ab.markedVertices).toEqual(jasmine.any(Object));
       });
-      return describe("click listener", function() {
+      describe("click listener", function() {
         var vertex;
         vertex = [100, 100];
         beforeEach(function() {
@@ -307,6 +310,18 @@
         });
         return it("calls repaintMarkedVertices", function() {
           return expect(ab.repaintMarkedVertices).toHaveBeenCalled();
+        });
+      });
+      return describe("mousedown listener", function() {
+        beforeEach(function() {
+          spyOn(ab, "getEventCoordinates").and.returnValue([x, y]);
+          return ab.cvTop.mousedown(evt);
+        });
+        it("gets the event coordinates", function() {
+          return expect(ab.getEventCoordinates).toHaveBeenCalledWith(evt, void 0, void 0);
+        });
+        return it("sets @start to the event coordinates", function() {
+          return expect(ab.start).toEqual([x, y]);
         });
       });
     });

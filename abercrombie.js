@@ -92,13 +92,18 @@
       this.alignCanvases();
       this.cvTop.style.cursor = "crosshair";
       this.markedVertices = {};
-      return this.cvTop.onclick = (function(_this) {
+      this.cvTop.onclick = (function(_this) {
         return function(evt, x, y) {
           var vertex;
           vertex = _this.getNearestVertexToEvent(evt, x, y);
           _this.toggleMarkedVertex(vertex);
           _this.repaintMarkedVertices();
           return _this.ui.updateCount();
+        };
+      })(this);
+      return this.cvTop.mousedown = (function(_this) {
+        return function(evt, x, y) {
+          return _this.start = _this.getEventCoordinates(evt, x, y);
         };
       })(this);
     };

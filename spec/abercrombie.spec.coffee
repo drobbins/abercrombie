@@ -267,6 +267,9 @@ describe "Abercrombie", ->
         it "listens at onclick on cvTop", ->
             expect(ab.cvTop.onclick).toEqual jasmine.any Function
 
+        it "listens at mousedown on cvTop", ->
+            expect(ab.cvTop.mousedown).toEqual jasmine.any Function
+
         it "creates an empty object @markedVertices", ->
             expect(ab.markedVertices).toEqual jasmine.any Object
 
@@ -290,6 +293,19 @@ describe "Abercrombie", ->
 
             it "calls repaintMarkedVertices", ->
                 expect(ab.repaintMarkedVertices).toHaveBeenCalled()
+
+        describe "mousedown listener", ->
+
+            beforeEach ->
+                spyOn ab, "getEventCoordinates"
+                    .and.returnValue [x, y]
+                ab.cvTop.mousedown evt
+
+            it "gets the event coordinates", ->
+                expect(ab.getEventCoordinates).toHaveBeenCalledWith evt, undefined, undefined
+
+            it "sets @start to the event coordinates", ->
+                expect(ab.start).toEqual [x,y]
 
     describe ".paintMarkedVertice", ->
 

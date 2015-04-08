@@ -65,6 +65,8 @@ class Abercrombie
             @toggleMarkedVertex vertex
             @repaintMarkedVertices()
             @ui.updateCount()
+        @cvTop.mousedown = (evt,x,y) =>
+            @start = @getEventCoordinates evt, x, y
 
     paintProbe: (x,y) ->
         @refresh()
