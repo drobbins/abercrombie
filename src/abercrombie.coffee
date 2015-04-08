@@ -61,13 +61,14 @@ class Abercrombie
         @cvTop.style.cursor = "crosshair"
         @markedVertices = {}
         @cvTop.onclick = (evt,x,y) =>
+            if @start?[0] != @end?[0] or @start?[1] != @end?[1] then return
             vertex = @getNearestVertexToEvent evt, x, y
             @toggleMarkedVertex vertex
             @repaintMarkedVertices()
             @ui.updateCount()
-        @cvTop.mousedown = (evt,x,y) =>
+        @cvTop.onmousedown = (evt,x,y) =>
             @start = @getEventCoordinates evt, x, y
-        @cvTop.mouseup = (evt,x,y) =>
+        @cvTop.onmouseup = (evt,x,y) =>
             @end = @getEventCoordinates evt, x, y
             x1 = Math.min @start[0], @end[0]
             x2 = Math.max @start[0], @end[0]
@@ -83,6 +84,8 @@ class Abercrombie
                     boundedVertices.push [x,y]
             for vertex in boundedVertices
                 @markedVertices[JSON.stringify vertex] = true
+            @repaintMarkedVertices()
+            @ui.updateCount()
 
     paintProbe: (x,y) ->
         @refresh()

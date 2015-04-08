@@ -94,21 +94,24 @@
       this.markedVertices = {};
       this.cvTop.onclick = (function(_this) {
         return function(evt, x, y) {
-          var vertex;
+          var vertex, _ref, _ref1, _ref2, _ref3;
+          if (((_ref = _this.start) != null ? _ref[0] : void 0) !== ((_ref1 = _this.end) != null ? _ref1[0] : void 0) || ((_ref2 = _this.start) != null ? _ref2[1] : void 0) !== ((_ref3 = _this.end) != null ? _ref3[1] : void 0)) {
+            return;
+          }
           vertex = _this.getNearestVertexToEvent(evt, x, y);
           _this.toggleMarkedVertex(vertex);
           _this.repaintMarkedVertices();
           return _this.ui.updateCount();
         };
       })(this);
-      this.cvTop.mousedown = (function(_this) {
+      this.cvTop.onmousedown = (function(_this) {
         return function(evt, x, y) {
           return _this.start = _this.getEventCoordinates(evt, x, y);
         };
       })(this);
-      return this.cvTop.mouseup = (function(_this) {
+      return this.cvTop.onmouseup = (function(_this) {
         return function(evt, x, y) {
-          var boundedVertices, vertex, vx, vy, x1, x2, xs, y1, y2, ys, _i, _j, _k, _len, _len1, _len2, _results;
+          var boundedVertices, vertex, vx, vy, x1, x2, xs, y1, y2, ys, _i, _j, _k, _len, _len1, _len2;
           _this.end = _this.getEventCoordinates(evt, x, y);
           x1 = Math.min(_this.start[0], _this.end[0]);
           x2 = Math.max(_this.start[0], _this.end[0]);
@@ -140,12 +143,12 @@
               boundedVertices.push([x, y]);
             }
           }
-          _results = [];
           for (_k = 0, _len2 = boundedVertices.length; _k < _len2; _k++) {
             vertex = boundedVertices[_k];
-            _results.push(_this.markedVertices[JSON.stringify(vertex)] = true);
+            _this.markedVertices[JSON.stringify(vertex)] = true;
           }
-          return _results;
+          _this.repaintMarkedVertices();
+          return _this.ui.updateCount();
         };
       })(this);
     };

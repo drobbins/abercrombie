@@ -287,10 +287,10 @@
         return expect(ab.cvTop.onclick).toEqual(jasmine.any(Function));
       });
       it("listens at mousedown on cvTop", function() {
-        return expect(ab.cvTop.mousedown).toEqual(jasmine.any(Function));
+        return expect(ab.cvTop.onmousedown).toEqual(jasmine.any(Function));
       });
       it("listens at mouseup on cvTop", function() {
-        return expect(ab.cvTop.mouseup).toEqual(jasmine.any(Function));
+        return expect(ab.cvTop.onmouseup).toEqual(jasmine.any(Function));
       });
       it("creates an empty object @markedVertices", function() {
         return expect(ab.markedVertices).toEqual(jasmine.any(Object));
@@ -302,6 +302,7 @@
           spyOn(ab, "getNearestVertexToEvent").and.returnValue(vertex);
           spyOn(ab, "repaintMarkedVertices");
           spyOn(ab, "toggleMarkedVertex");
+          spyOn(ab.ui, "updateCount");
           ab.ui = jasmine.createSpyObj("ui", ["updateCount"]);
           return ab.cvTop.onclick();
         });
@@ -311,14 +312,26 @@
         it("toggles the nearest vertex into/out of @markedVertices", function() {
           return expect(ab.toggleMarkedVertex).toHaveBeenCalledWith(vertex);
         });
-        return it("calls repaintMarkedVertices", function() {
+        it("calls repaintMarkedVertices", function() {
           return expect(ab.repaintMarkedVertices).toHaveBeenCalled();
+        });
+        it("calls ui.updateCount", function() {
+          return expect(ab.ui.updateCount).toHaveBeenCalled();
+        });
+        return it("does nothing if @start and @end are not the same", function() {
+          ab.start = vertex;
+          ab.end = [vertex[0] + 50, vertex[1] + 50];
+          ab.cvTop.onclick();
+          expect(ab.getNearestVertexToEvent.calls.count()).toEqual(1);
+          expect(ab.toggleMarkedVertex.calls.count()).toEqual(1);
+          expect(ab.repaintMarkedVertices.calls.count()).toEqual(1);
+          return expect(ab.ui.updateCount.calls.count()).toEqual(1);
         });
       });
       describe("mousedown listener", function() {
         beforeEach(function() {
           spyOn(ab, "getEventCoordinates").and.returnValue([x, y]);
-          return ab.cvTop.mousedown(evt);
+          return ab.cvTop.onmousedown(evt);
         });
         it("gets the event coordinates", function() {
           return expect(ab.getEventCoordinates).toHaveBeenCalledWith(evt, void 0, void 0);
@@ -346,9 +359,11 @@
         beforeEach(function() {
           point2 = [ab.size * 2 + 10, ab.size * 2 + 10];
           spyOn(ab, "getEventCoordinates").and.returnValue(point2);
+          spyOn(ab, "repaintMarkedVertices");
+          spyOn(ab.ui, "updateCount");
           ab.start = point1;
           ab.markedVertices = initialMarkedVertices;
-          return ab.cvTop.mouseup(evt);
+          return ab.cvTop.onmouseup(evt);
         });
         it("gets the event coordinates", function() {
           return expect(ab.getEventCoordinates).toHaveBeenCalledWith(evt, void 0, void 0);
@@ -356,8 +371,14 @@
         it("sets @end to the event coordinates", function() {
           return expect(ab.end).toEqual(point2);
         });
-        return it("puts any vertices within the selected area into @markedVertices", function() {
+        it("puts any vertices within the selected area into @markedVertices", function() {
           return expect(ab.markedVertices).toEqual(expectedMarkedVertices);
+        });
+        it("calls repaintMarkedVertices", function() {
+          return expect(ab.repaintMarkedVertices).toHaveBeenCalled();
+        });
+        return it("calls ui.updateCount", function() {
+          return expect(ab.ui.updateCount).toHaveBeenCalled();
         });
       });
     });

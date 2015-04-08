@@ -268,10 +268,10 @@ describe "Abercrombie", ->
             expect(ab.cvTop.onclick).toEqual jasmine.any Function
 
         it "listens at mousedown on cvTop", ->
-            expect(ab.cvTop.mousedown).toEqual jasmine.any Function
+            expect(ab.cvTop.onmousedown).toEqual jasmine.any Function
 
         it "listens at mouseup on cvTop", ->
-            expect(ab.cvTop.mouseup).toEqual jasmine.any Function
+            expect(ab.cvTop.onmouseup).toEqual jasmine.any Function
 
         it "creates an empty object @markedVertices", ->
             expect(ab.markedVertices).toEqual jasmine.any Object
@@ -285,6 +285,7 @@ describe "Abercrombie", ->
                     .and.returnValue vertex
                 spyOn ab, "repaintMarkedVertices"
                 spyOn ab, "toggleMarkedVertex"
+                spyOn ab.ui, "updateCount"
                 ab.ui = jasmine.createSpyObj "ui", ["updateCount"]
                 ab.cvTop.onclick()
 
@@ -297,12 +298,26 @@ describe "Abercrombie", ->
             it "calls repaintMarkedVertices", ->
                 expect(ab.repaintMarkedVertices).toHaveBeenCalled()
 
+            it "calls ui.updateCount", ->
+                expect(ab.ui.updateCount).toHaveBeenCalled()
+
+            it "does nothing if @start and @end are not the same", ->
+                ab.start = vertex
+                ab.end = [vertex[0]+50, vertex[1]+50]
+                ab.cvTop.onclick()
+                # Each below was called once for the ab.cvTop.onclick() in the beforeEach,
+                # but not for the call in this test.
+                expect(ab.getNearestVertexToEvent.calls.count()).toEqual 1
+                expect(ab.toggleMarkedVertex.calls.count()).toEqual 1
+                expect(ab.repaintMarkedVertices.calls.count()).toEqual 1
+                expect(ab.ui.updateCount.calls.count()).toEqual 1
+
         describe "mousedown listener", ->
 
             beforeEach ->
                 spyOn ab, "getEventCoordinates"
                     .and.returnValue [x, y]
-                ab.cvTop.mousedown evt
+                ab.cvTop.onmousedown evt
 
             it "gets the event coordinates", ->
                 expect(ab.getEventCoordinates).toHaveBeenCalledWith evt, undefined, undefined
@@ -329,9 +344,11 @@ describe "Abercrombie", ->
                 point2 = [ab.size * 2 + 10, ab.size * 2 + 10]
                 spyOn ab, "getEventCoordinates"
                     .and.returnValue point2
+                spyOn ab, "repaintMarkedVertices"
+                spyOn ab.ui, "updateCount"
                 ab.start = point1
                 ab.markedVertices = initialMarkedVertices
-                ab.cvTop.mouseup evt
+                ab.cvTop.onmouseup evt
 
             it "gets the event coordinates", ->
                 expect(ab.getEventCoordinates).toHaveBeenCalledWith evt, undefined, undefined
@@ -341,6 +358,12 @@ describe "Abercrombie", ->
 
             it "puts any vertices within the selected area into @markedVertices", ->
                 expect(ab.markedVertices).toEqual expectedMarkedVertices
+
+            it "calls repaintMarkedVertices", ->
+                expect(ab.repaintMarkedVertices).toHaveBeenCalled()
+
+            it "calls ui.updateCount", ->
+                expect(ab.ui.updateCount).toHaveBeenCalled()
 
     describe ".paintMarkedVertice", ->
 
