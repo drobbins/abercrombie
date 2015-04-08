@@ -270,6 +270,9 @@ describe "Abercrombie", ->
         it "listens at mousedown on cvTop", ->
             expect(ab.cvTop.mousedown).toEqual jasmine.any Function
 
+        it "listens at mouseup on cvTop", ->
+            expect(ab.cvTop.mouseup).toEqual jasmine.any Function
+
         it "creates an empty object @markedVertices", ->
             expect(ab.markedVertices).toEqual jasmine.any Object
 
@@ -306,6 +309,38 @@ describe "Abercrombie", ->
 
             it "sets @start to the event coordinates", ->
                 expect(ab.start).toEqual [x,y]
+
+        describe "mouseup listener", ->
+
+            point1 = [10,10]
+            point2 = null
+            initialMarkedVertices =
+                "[100,50]": true  # Marked point inside range
+                "[50,100]": false # Unmarked point inside range
+                "[200,250]": true # Point outside the range
+            expectedMarkedVertices =
+                "[50,50]": true
+                "[100,50]": true
+                "[50,100]": true
+                "[100,100]": true
+                "[200,250]": true
+
+            beforeEach ->
+                point2 = [ab.size * 2 + 10, ab.size * 2 + 10]
+                spyOn ab, "getEventCoordinates"
+                    .and.returnValue point2
+                ab.start = point1
+                ab.markedVertices = initialMarkedVertices
+                ab.cvTop.mouseup evt
+
+            it "gets the event coordinates", ->
+                expect(ab.getEventCoordinates).toHaveBeenCalledWith evt, undefined, undefined
+
+            it "sets @end to the event coordinates", ->
+                expect(ab.end).toEqual point2
+
+            it "puts any vertices within the selected area into @markedVertices", ->
+                expect(ab.markedVertices).toEqual expectedMarkedVertices
 
     describe ".paintMarkedVertice", ->
 

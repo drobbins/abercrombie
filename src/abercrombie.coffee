@@ -67,6 +67,22 @@ class Abercrombie
             @ui.updateCount()
         @cvTop.mousedown = (evt,x,y) =>
             @start = @getEventCoordinates evt, x, y
+        @cvTop.mouseup = (evt,x,y) =>
+            @end = @getEventCoordinates evt, x, y
+            x1 = Math.min @start[0], @end[0]
+            x2 = Math.max @start[0], @end[0]
+            y1 = Math.min @start[1], @end[1]
+            y2 = Math.max @start[1], @end[1]
+            vx = Math.ceil(x1/@size) * @size    # x of the vertex nearest the upper-left corner
+            vy = Math.ceil(y1/@size) * @size    # y of the vertex nearest the upper-left corner
+            xs = (x for x in [vx..x2] by @size) # array of the x's of bounded vertices
+            ys = (y for y in [vy..y2] by @size) # array of the y's of bounded vertices
+            boundedVertices = []
+            for x in xs
+                for y in ys
+                    boundedVertices.push [x,y]
+            for vertex in boundedVertices
+                @markedVertices[JSON.stringify vertex] = true
 
     paintProbe: (x,y) ->
         @refresh()

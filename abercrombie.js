@@ -101,9 +101,51 @@
           return _this.ui.updateCount();
         };
       })(this);
-      return this.cvTop.mousedown = (function(_this) {
+      this.cvTop.mousedown = (function(_this) {
         return function(evt, x, y) {
           return _this.start = _this.getEventCoordinates(evt, x, y);
+        };
+      })(this);
+      return this.cvTop.mouseup = (function(_this) {
+        return function(evt, x, y) {
+          var boundedVertices, vertex, vx, vy, x1, x2, xs, y1, y2, ys, _i, _j, _k, _len, _len1, _len2, _results;
+          _this.end = _this.getEventCoordinates(evt, x, y);
+          x1 = Math.min(_this.start[0], _this.end[0]);
+          x2 = Math.max(_this.start[0], _this.end[0]);
+          y1 = Math.min(_this.start[1], _this.end[1]);
+          y2 = Math.max(_this.start[1], _this.end[1]);
+          vx = Math.ceil(x1 / _this.size) * _this.size;
+          vy = Math.ceil(y1 / _this.size) * _this.size;
+          xs = (function() {
+            var _i, _ref, _results;
+            _results = [];
+            for (x = _i = vx, _ref = this.size; _ref > 0 ? _i <= x2 : _i >= x2; x = _i += _ref) {
+              _results.push(x);
+            }
+            return _results;
+          }).call(_this);
+          ys = (function() {
+            var _i, _ref, _results;
+            _results = [];
+            for (y = _i = vy, _ref = this.size; _ref > 0 ? _i <= y2 : _i >= y2; y = _i += _ref) {
+              _results.push(y);
+            }
+            return _results;
+          }).call(_this);
+          boundedVertices = [];
+          for (_i = 0, _len = xs.length; _i < _len; _i++) {
+            x = xs[_i];
+            for (_j = 0, _len1 = ys.length; _j < _len1; _j++) {
+              y = ys[_j];
+              boundedVertices.push([x, y]);
+            }
+          }
+          _results = [];
+          for (_k = 0, _len2 = boundedVertices.length; _k < _len2; _k++) {
+            vertex = boundedVertices[_k];
+            _results.push(_this.markedVertices[JSON.stringify(vertex)] = true);
+          }
+          return _results;
         };
       })(this);
     };
