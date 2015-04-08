@@ -2,8 +2,8 @@ class Abercrombie
     constructor: ->
         @id        = "abercrombie"
         @version   = "0.0.1"
-        @size      = 50               # Default px size of grid
-        @probeSize = 10             # Default px size of probes
+        @size      = 100               # Default px size of grid
+        @probeSize = 6             # Default px size of probes
         @Abercrombie = Abercrombie  # Abercrombie-ception
 
     refresh: ->

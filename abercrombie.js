@@ -5,8 +5,8 @@
     function Abercrombie() {
       this.id = "abercrombie";
       this.version = "0.0.1";
-      this.size = 50;
-      this.probeSize = 10;
+      this.size = 100;
+      this.probeSize = 6;
       this.Abercrombie = Abercrombie;
     }
 
